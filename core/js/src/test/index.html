@@ -1,0 +1,116 @@
+<html><head></head>
+<body>
+<button onClick="javascript:genKeyPair()">GenKeyPair</button>
+<button onClick="javascript:generateSymmetricKey()">GenDocumentSymmetricKey</button>
+<button onClick="javascript:encrypt()">Encrypt</button>
+<button onClick="javascript:decrypt()">Decrypt</button>
+<button onClick="javascript:generateTransformKey()">Transform Key</button>
+<button onClick="javascript:derivePublicKey()">Derive Public Key</button>
+<script src="https://unpkg.com/sjcl@1.0.6"></script>
+<script src="https://unpkg.com/base64-js@1.2.0/base64js.min.js"></script>
+<script src="recrypt-core-opt.js"></script>
+<!--<script src="recrypt-core-fastopt.js"></script>-->
+<script>
+    var keys, encryptedValue, symmetricKey;
+
+    var sha256Hash = (hashBytes) => {
+        var valueAsBits = sjcl.codec.base64.toBits(base64js.fromByteArray(hashBytes));
+        var hashed = sjcl.hash.sha256.hash(valueAsBits);
+        var backToByteArray = base64js.toByteArray(sjcl.codec.base64.fromBits(hashed))
+        return new Int8Array(backToByteArray);
+    };
+
+    var randomByteGenerator = window.callbackToIO((resolve, reject) => {
+        resolve(window.crypto.getRandomValues(new Uint8Array(32)));
+    });
+
+    var API = new window.Api(randomByteGenerator, sha256Hash);
+
+    function genKeyPair(){
+        console.time('genkeypair');
+        window.ioToFunc(API.generateKeyPair, (error) => {
+            console.log(error);
+        }, (keyResult) => {
+            console.timeEnd('genkeypair');
+            keys = keyResult;
+
+            console.log("Public Key");
+            console.log(keys.publicKey.x);
+            console.log(keys.publicKey.y);
+            console.log("Private Key");
+            console.log(keys.privateKey.bytes);
+        })
+    }
+
+    function generateSymmetricKey(){
+        console.time('generateSymmetricKey');
+        window.ioToFunc(API.generateSymmetricKey, (error) => {
+            console.log(error);
+        }, (genSymmetricKey) => {
+            console.timeEnd('generateSymmetricKey');
+            symmetricKey = genSymmetricKey;
+
+            console.log("Symmetric Key");
+            console.log(symmetricKey.bytes);
+        })
+    }
+
+    function encrypt(){
+        console.time('encrypt');
+        window.ioToFunc(API.encrypt(symmetricKey, keys.publicKey),
+            () => {
+                debugger;
+            },
+            (encValue) => {
+                console.timeEnd('encrypt');
+                encryptedValue = encValue;
+            }
+        );
+    }
+
+    function decrypt(){
+        console.time('decrypt');
+        window.ioToFunc(API.decrypt(encryptedValue, keys.privateKey),
+            () => {
+                debugger;
+            },
+            (decryptedSymmetricKey) => {
+                console.timeEnd('decrypt');
+                const decryptedUnsigned = decryptedSymmetricKey.bytes;
+                console.log("Decrypted bytes:");
+                console.log(decryptedUnsigned);
+            }
+        );
+    }
+
+    function generateTransformKey(){
+        console.time('transform');
+        window.ioToFunc(API.generateTransformKey(keys.privateKey, keys.publicKey),
+            () => {
+                debugger;
+            },
+            (transformKey) => {
+                console.timeEnd('transform');
+                console.log("Transform Key:");
+                console.log(transformKey);
+            }
+        );
+    }
+
+    function derivePublicKey(){
+        console.time('derivePublicKey');
+        window.ioToFunc(API.computePublicKey(keys.privateKey),
+            () => {
+                debugger;
+            },
+            (derivedPublicKey) => {
+                console.timeEnd('derivePublicKey');
+                console.log("Derived Public Key");
+                console.log(derivedPublicKey.x);
+                console.log(derivedPublicKey.y);
+            }
+        );
+    }
+</script>
+</body>
+</html>

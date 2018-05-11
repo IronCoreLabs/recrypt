@@ -1,0 +1,33 @@
+# Contributing to recrypt
+
+We welcome your involvement with this project, and we want to make the process of contributing to it as simple as possible.
+
+## Issues
+We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
+
+
+## Contributing Code
+
+We use a standard GitHub flow to managing contributions in the form of code changes.
+If you would like to make some changes to the code and submit them back to us to be
+included in the public recrypt repo, please follow these steps:
+
+
+1. Fork the `recrypt` repo and create a branch for your changes.
+2. Make code changes in that branch.
+3. If you've added code that should be tested, add tests.
+4. If you've changed APIs, update the documentation.
+5. Ensure the test suite passes.
+6. Make sure your code lints.
+7. If you haven't already, complete the Contributor License Agreement ("CLA").
+8. Create a pull request from your fork back to the recrypt repo.
+
+We'll review and take it from there.
+
+
+## Contributor License Agreement ("CLA")
+In order to accept a pull request, we need each contributor (anyone who committed
+code to the branch) to complete a [CLA](icla.pdf).
+
+Alternately, we provide a [Corporate CLA](ocla.pdf) to cover contributions by
+members of a company that want to contribute on the company's behalf.

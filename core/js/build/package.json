@@ -1,0 +1,16 @@
+{
+  "name": "@ironcorelabs/recryptjs",
+  "version": "1.3.0",
+  "author": "IronCore Labs",
+  "description": "IronCore Labs Recrypt Library in Javascript",
+  "homepage": "https://github.com/IronCoreLabs/recrypt#readme",
+  "types": "recrypt.d.ts",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IronCoreLabs/recrypt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/IronCoreLabs/recrypt/issues"
+  }
+}
