@@ -64,11 +64,18 @@ cd "$ROOT_PUBLISH_DIR"/../../../
 SCALA_JS_COMMON_JS=true sbt clean fullOptJS
 
 cp core/js/target/scala-2.12/recrypt-core-opt.js core/js/build/index.js
+cp README.md core/js/build/
+cp LICENSE core/js/build/
 
 cd core/js/build
 
 if [ "$PUBLISH" == true ]; then
-    npm publish --access restricted
+    npm publish --access public
 else
     irish-pub
 fi
+
+# Cleanup files that we moved into the build directory
+rm LICENSE
+rm README.md
+rm index.js
