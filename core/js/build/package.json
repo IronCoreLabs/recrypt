@@ -2,7 +2,7 @@
   "name": "@ironcorelabs/recryptjs",
   "version": "1.3.0",
   "author": "IronCore Labs",
-  "license": "AGPL",
+  "license": "AGPL-3.0",
   "description": "IronCore Labs Transform Encryption library in Javascript",
   "homepage": "https://github.com/IronCoreLabs/recrypt#readme",
   "types": "recrypt.d.ts",
