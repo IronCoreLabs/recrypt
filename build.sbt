@@ -95,6 +95,15 @@ lazy val recryptSettings = Seq(
   scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
 
   //Release configuration
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  isSnapshot := version.value endsWith "SNAPSHOT",
+  homepage := Some(url("http://github.com/ironcorelabs/recrypt")),
+  useGpg := true,
+  publishTo := Some(
+    if (isSnapshot.value)
+      Opts.resolver.sonatypeSnapshots
+    else
+      Opts.resolver.sonatypeStaging),
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ => false },
@@ -173,5 +182,3 @@ lazy val benchmark = project.in(file("benchmark"))
       "org.abstractj.kalium" % "kalium" % "0.5.0"
     ))
   .enablePlugins(JmhPlugin)
-
-
