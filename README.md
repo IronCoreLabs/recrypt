@@ -1,7 +1,7 @@
 Recrypt
 ==========================
-[![Build Status](https://travis-ci.org/IronCoreLabs/recrypt-core.svg?branch=master)](https://travis-ci.org/IronCoreLabs/recrypt-core)
-[![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt-core/coverage.svg?branch=master)](https://codecov.io/github/IronCoreLabs/recrypt-core?branch=master)
+[![Build Status](https://travis-ci.org/IronCoreLabs/recrypt.svg?branch=master)](https://travis-ci.org/IronCoreLabs/recrypt)
+[![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt/coverage.svg?branch=master)](https://codecov.io/github/IronCoreLabs/recrypt?branch=master)
 [![scaladoc](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12)
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Frecryptjs.svg)](https://www.npmjs.com/package/@ironcorelabs/recryptjs)
 
