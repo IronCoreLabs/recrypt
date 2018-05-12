@@ -14,6 +14,7 @@ branches:
     - master
 
 install:
+  - pip install --user codecov
   - . $HOME/.nvm/nvm.sh
   - nvm install stable
   - nvm use stable
@@ -23,3 +24,6 @@ install:
 script:
 - sbt ++$TRAVIS_SCALA_VERSION scalastyle
 - sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport
+
+after_success:
+- codecov
