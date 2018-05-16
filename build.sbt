@@ -51,7 +51,8 @@ lazy val recryptSettings = Seq(
     "-language:higherKinds",             // Allow higher-kinded types
     "-language:implicitConversions",     // Allow definition of implicit functions called views
     "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
-    "-Xcheckinit",                       // Wrap field accessors to throw an exception on uninitialized access.
+    //This is left here to keep it close to tpolecat's original. It's added in jvm, but causes js to bloat.
+    //"-Xcheckinit",                       // Wrap field accessors to throw an exception on uninitialized access.
     "-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
     "-Xfuture",                          // Turn on future language features.
     "-Xlint:adapted-args",               // Warn if an argument list is modified to match the receiver.
@@ -133,7 +134,10 @@ lazy val commonJvmSettings = Seq(
   testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
       "com.ironcorelabs" %%% "cats-scalatest" % "2.3.0" % "test"
-    ) 
+    ),
+  scalacOptions ++= Seq(
+    "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
+  )
 )
 
 lazy val commonJsSettings = Seq(
