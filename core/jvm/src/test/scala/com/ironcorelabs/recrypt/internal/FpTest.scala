@@ -21,11 +21,20 @@ import Fp.implicits._
 import Arbitraries.fpGen
 import org.scalacheck.Arbitrary
 import spire.implicits._
+import scodec.bits.BitVector
 
 class FpTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
   //Things in here are fundemental operations so tehy should work even for 0
   implicit val fpArb = Arbitrary(fpGen)
+
+  "Fp.apply" should {
+    "yield expected result" in {
+      val result = Fp.Impl(BitVector.bits(List.fill(256)(true)).toByteVector)
+      val expectedResult = Fp.Impl(BigInt("50791539541669591690774546266328002110444626558017560467580438981048945568152"))
+      result shouldBe expectedResult
+    }
+  }
 
   "Fp.negate" should {
     "Always be in Fp" in {
