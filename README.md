@@ -72,7 +72,7 @@ _Guide to Pairing-Based Cryptography_ by N.E. Mrabet and M. Joye, Chapman and Ha
 
 ## Code Audit
 
-The NCC Group has conducted an audit of this library - we have a blog post about the audit [here](https://blog.ironcorelabs.com/ironcore-labs-proxy-re-encryption-library-audit-by-ncc-group-f67abe666838), and their findings are available in a public report [here](https://www.nccgroup.trust/us/our-research/proxy-re-encryption-protocol-ironcore-public-report/?research=Public+Reports). The NCC Group audit found that the chosen pairing and elliptic curve are cryptographically sound and secure, and that the Scala implementation is a faithful and correct embodiment of the target protocol.
+The NCC Group has conducted an audit of this library - we have a blog post about the audit [here](https://blog.ironcorelabs.com/ironcore-labs-proxy-re-encryption-library-audit-by-ncc-group-f67abe666838), and their findings are available in a public report [here](https://www.nccgroup.trust/us/our-research/proxy-re-encryption-protocol-ironcore-public-report/). The NCC Group audit found that the chosen pairing and elliptic curve are cryptographically sound and secure, and that the Scala implementation is a faithful and correct embodiment of the target protocol.
 
 # The Project
 
