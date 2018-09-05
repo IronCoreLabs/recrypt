@@ -11,7 +11,7 @@ The library is implemented in Scala, and the build produces a `.jar` you can use
 
 # Proxy Re-Encryption
 
-A proxy re-encryption (PRE) scheme is a public-key encryption scheme, meaning that each participant has a pair of related keys, one public and one private. If Alice wants to encrypt a message so that only Bob can read it, she obtains Bob's public key and uses the public key encryption algorithm to secure the message. When Bob receives the encrypted message, he uses his private key to decrypt the message.
+A proxy re-encryption (PRE) scheme is a public-key encryption scheme, meaning that each participant has a pair of related keys, one public and one private. If Alice wants to encrypt a message so that only Bob can read it, she obtains Bob's public key and uses the public key encryption algorithm to secure the message. When Bob receives the encrypted message, he uses his private key to decrypt it and recover the original message.
 
 PRE allows someone (the _delegator_) to delegate the ability to decrypt her messages to another person (the _delegatee_). In a standard public-key cryptosystem, the delegator would just need to share her private key with the delegatee. This allows the delegatee to access the encrypted messages, but when the delegator wants to revoke the access, she cannot be absolutely sure the delegatee will discard his copy of the private key. With proxy re-encryption, the delegator computes a _re-encryption key_ (or _transform key_) that will allow messages encrypted to her public key to be transformed so they are encrypted to the delegatee's public key. Computing this transform key requires the delegator's private key and the delegatee's public key; once it is computed, the key is stored on a _semi-trusted proxy_.
 
@@ -70,6 +70,9 @@ Our implementation was guided by the following papers:
 And by the book:
 _Guide to Pairing-Based Cryptography_ by N.E. Mrabet and M. Joye, Chapman and Hall/CRC Cryptography and Network Security Series, 2016.
 
+## Code Audit
+
+The NCC Group has conducted an audit of this library - we have a blog post about the audit [here](https://blog.ironcorelabs.com/ironcore-labs-proxy-re-encryption-library-audit-by-ncc-group-f67abe666838), and their findings are available in a public report [here](https://www.nccgroup.trust/us/our-research/proxy-re-encryption-protocol-ironcore-public-report/). The NCC Group audit found that the chosen pairing and elliptic curve are cryptographically sound and secure, and that the Scala implementation is a faithful and correct embodiment of the target protocol.
 
 # The Project
 
