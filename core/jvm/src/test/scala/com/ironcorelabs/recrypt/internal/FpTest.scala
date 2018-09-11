@@ -74,4 +74,21 @@ class FpTest extends com.ironcorelabs.recrypt.TestBase {
     }
   }
 
+  "Fp.ModsByPrime.create" should {
+    import scodec.bits.ByteVector
+    val mods = implicitly[ModsByPrime[Fp]]
+    "Create known value for 64 byte array" in {
+      val thirty_two_bytes = ByteVector.fill(32)(1.toByte)
+      val input = thirty_two_bytes ++ thirty_two_bytes
+      mods.create(input) shouldBe Fp(BigInt("52985480557495246266538294759444418497567570469767957953504536616255684048226"))
+    }
+
+    "Create known value for another 64 byte array" in {
+      val one_bytes = ByteVector.fill(16)(1.toByte)
+      val zero_bytes = ByteVector.fill(16)(0.toByte)
+      val input = zero_bytes ++ one_bytes ++ zero_bytes ++ one_bytes
+      mods.create(input) shouldBe Fp(BigInt("54528517336565915139246673167415770626278933459643464115007152164576808341406"))
+    }
+  }
+
 }
