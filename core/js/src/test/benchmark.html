@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Performance tests</title>
     <link rel="stylesheet" href="https://unpkg.com/astrobench@0.1.2/src/style.css">
 </head>
+
 <body>
     <!-- Wrapper for tests -->
     <div id="astrobench"></div>
@@ -15,203 +17,204 @@
     <script src="encryptedvalue.js"></script>
     <script src="recrypt-core-opt.js"></script>
     <script>
-        const FP12_ELEMENT_LENGTH = 384;
-        let randomSeed = 1;
-        function syncBenchmarkOptions(onCycle){
+        var FP12_ELEMENT_LENGTH = 384;
+        var randomSeed = 1;
+        function syncBenchmarkOptions(onCycle) {
             return {
-                onComplete: () => randomSeed = 1,
+                onComplete: function () { randomSeed = 1 },
                 onCycle: onCycle
             };
         }
-        function asyncBenchmarkOptions(onCycle){
+        function asyncBenchmarkOptions(onCycle) {
             return {
-                onComplete: () => randomSeed = 1,
+                onComplete: function () { randomSeed = 1 },
                 onCycle: onCycle,
                 defer: true
             };
         }
 
-        const randomByteGenerator = callbackToIO((resolve, reject) => {
+        var randomByteGenerator = callbackToIO(function (resolve, reject) {
             resolve(sha256Hash(new Uint8Array([randomSeed++])));
         });
 
-        const sha256Hash = (hashBytes) => {
-            const valueAsBits = sjcl.codec.base64.toBits(base64js.fromByteArray(hashBytes));
-            const hashed = sjcl.hash.sha256.hash(valueAsBits);
+        var sha256Hash = function (hashBytes) {
+            var valueAsBits = sjcl.codec.base64.toBits(base64js.fromByteArray(hashBytes));
+            var hashed = sjcl.hash.sha256.hash(valueAsBits);
             return base64js.toByteArray(sjcl.codec.base64.fromBits(hashed));
         };
 
-        const signingFunction = (privateSigningKey, message) => {
-            return {bytes: nacl.sign.detached(message, privateSigningKey.bytes)};
+        var signingFunction = function (privateSigningKey, message) {
+            return { bytes: nacl.sign.detached(message, privateSigningKey.bytes) };
         };
 
-        const verifyFunction = (publicSigningKey, message, signature) => {
+        var verifyFunction = function (publicSigningKey, message, signature) {
             return nacl.sign.detached.verify(message, signature.bytes, publicSigningKey.bytes);
         };
 
-        const generateRandomBytesForLength = (length, seed) => {
-            const iterations = Math.ceil(length / 32);//We generate 32 random bytes at a time
-            const bytes = new Uint8Array(iterations * 32);
-            for(let i=0; i<iterations; i++){
-                bytes.set(sha256Hash(new Uint8Array([seed++])), i*32);
+        var generateRandomBytesForLength = function (length, seed) {
+            var iterations = Math.ceil(length / 32);//We generate 32 random bytes at a time
+            var bytes = new Uint8Array(iterations * 32);
+            for (let i = 0; i < iterations; i++) {
+                bytes.set(sha256Hash(new Uint8Array([seed++])), i * 32);
             }
-            return bytes.slice(0, length);
+            return new Uint8Array(Array.prototype.slice.call(bytes, 0, length));
         }
 
-        const PreCrypt = new Api(randomByteGenerator, sha256Hash, signingFunction, verifyFunction);
+        var PreCrypt = new Api(randomByteGenerator, sha256Hash, signingFunction, verifyFunction);
 
-        suite('generateKeyPair', () => {
-            bench('generateKeyPair', function(done){
-                ioToFunc(PreCrypt.generateKeyPair, console.log, () => {
+        suite('generateKeyPair', function () {
+            bench('generateKeyPair', function (done) {
+                ioToFunc(PreCrypt.generateKeyPair, console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions());
         });
 
-        suite('generatePlaintext', () => {
-            bench('generatePlaintext', function(done){
-                ioToFunc(PreCrypt.generatePlaintext, console.log, () => {
+        suite('generatePlaintext', function () {
+            bench('generatePlaintext', function (done) {
+                ioToFunc(PreCrypt.generatePlaintext, console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions());
         });
 
-        suite('generateTransformKey', (suite) => {
-            let fromPrivateKey, toPublicKey, publicSigningKey, privateSigningKey;
-            const onCycle = () => {
-                ioToFunc(PreCrypt.generateKeyPair, console.log, (keyPair) => {
+        suite('generateTransformKey', function (suite) {
+            var fromPrivateKey, toPublicKey, publicSigningKey, privateSigningKey;
+            var onCycle = function () {
+                ioToFunc(PreCrypt.generateKeyPair, console.log, function (keyPair) {
                     fromPrivateKey = keyPair.privateKey;
                 });
-                ioToFunc(PreCrypt.generateKeyPair, console.log, (keyPair) => {
+                ioToFunc(PreCrypt.generateKeyPair, console.log, function (keyPair) {
                     toPublicKey = keyPair.publicKey;
                 });
-                publicSigningKey = {bytes: sha256Hash(new Uint8Array([randomSeed++]))};
-                privateSigningKey = {bytes: generateRandomBytesForLength(64, randomSeed++)};
+                publicSigningKey = { bytes: sha256Hash(new Uint8Array([randomSeed++])) };
+                privateSigningKey = { bytes: generateRandomBytesForLength(64, randomSeed++) };
             };
             onCycle();
 
-            bench('generateTransformKey', function(done){
-                ioToFunc(PreCrypt.generateTransformKey(fromPrivateKey, toPublicKey, publicSigningKey, privateSigningKey), console.log, (stuff) => {
+            bench('generateTransformKey', function (done) {
+                ioToFunc(PreCrypt.generateTransformKey(fromPrivateKey, toPublicKey, publicSigningKey, privateSigningKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions(onCycle));
         });
 
-        suite('encrypt', (suite) => {
-            let plaintext, publicKey, publicSigningKey, privateSigningKey;
-            const onCycle = () => {
-                ioToFunc(PreCrypt.generatePlaintext, console.log, (pt) => {
+        suite('encrypt', function (suite) {
+            var plaintext, publicKey, publicSigningKey, privateSigningKey;
+            var onCycle = function () {
+                ioToFunc(PreCrypt.generatePlaintext, console.log, function (pt) {
                     plaintext = pt;
                 });
-                ioToFunc(PreCrypt.generateKeyPair, console.log, (keypair) => {
+                ioToFunc(PreCrypt.generateKeyPair, console.log, function (keypair) {
                     publicKey = keypair.publicKey;
                 });
-                publicSigningKey = {bytes: sha256Hash(new Uint8Array([randomSeed++]))};
-                privateSigningKey = {bytes: generateRandomBytesForLength(64, randomSeed++)};
+                publicSigningKey = { bytes: sha256Hash(new Uint8Array([randomSeed++])) };
+                privateSigningKey = { bytes: generateRandomBytesForLength(64, randomSeed++) };
             };
             onCycle();
 
-            bench('encrypt', function(done){
-                ioToFunc(PreCrypt.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey), console.log, (stuff) => {
+            bench('encrypt', function (done) {
+                ioToFunc(PreCrypt.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions(onCycle));
         });
 
-        suite('unaugmented decrypt', (suite) => {
-            let plaintext, publicKey, privateKey, signingKeys, lvl1EncryptedValue;
-            let lvl2EncryptedValue, lvl3EncryptedValue;
+        suite('unaugmented decrypt', function (suite) {
+            var plaintext, publicKey, privateKey, signingKeys, lvl1EncryptedValue;
+            var lvl2EncryptedValue, lvl3EncryptedValue;
 
-            setup(() => {
-                ioToFunc(PreCrypt.generatePlaintext, console.log, (pt) => {
+            setup(function () {
+                ioToFunc(PreCrypt.generatePlaintext, console.log, function (pt) {
                     plaintext = pt;
                 });
-                const signingKeys = nacl.sign.keyPair.fromSeed(sha256Hash(new Uint8Array([randomSeed++])));
-                ioToFunc(PreCrypt.generateKeyPair, console.log, (keys) => {
+                var signingKeys = nacl.sign.keyPair.fromSeed(sha256Hash(new Uint8Array([randomSeed++])));
+                ioToFunc(PreCrypt.generateKeyPair, console.log, function (keys) {
                     privateKey = keys.privateKey;
                     publicKey = keys.publicKey;
 
-                    ioToFunc(PreCrypt.encrypt(plaintext, publicKey, {bytes: signingKeys.publicKey}, {bytes: signingKeys.secretKey}), console.log, (encryptedValue) => {
+                    ioToFunc(PreCrypt.encrypt(plaintext, publicKey, { bytes: signingKeys.publicKey }, { bytes: signingKeys.secretKey }), console.log, function (encryptedValue) {
                         lvl1EncryptedValue = encryptedValue;
                     });
                 });
             });
 
-            bench('decrypt', function(done){
-                ioToFunc(PreCrypt.decrypt(lvl1EncryptedValue, privateKey), console.log, () => {
+            bench('decrypt', function (done) {
+                ioToFunc(PreCrypt.decrypt(lvl1EncryptedValue, privateKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions());
         });
 
-        suite('decrypt', (suite) => {
-            let level1EncryptedValue;
-            let level1PrivateKey;
-            let level2EncryptedValue;
-            let level2PrivateKey;
+        suite('decrypt', function (suite) {
+            var level1EncryptedValue;
+            var level1PrivateKey;
+            var level2EncryptedValue;
+            var level2PrivateKey;
 
-            setup(() => {
+            setup(function () {
                 const signingKeys = nacl.sign.keyPair.fromSeed(sha256Hash(new Uint8Array([randomSeed++])));
-                generateEncryptedLevel1(PreCrypt, signingKeys, (lvl1PrivateKey, lvl1Message) => {
+                generateEncryptedLevel1(PreCrypt, signingKeys, function (lvl1PrivateKey, lvl1Message) {
                     level1PrivateKey = lvl1PrivateKey;
                     level1EncryptedValue = lvl1Message;
                 });
-                generateEncryptedLevel2(PreCrypt, signingKeys, (lvl2PrivateKey, lvl2Message) => {
+                generateEncryptedLevel2(PreCrypt, signingKeys, function (lvl2PrivateKey, lvl2Message) {
                     level2PrivateKey = lvl2PrivateKey;
                     level2EncryptedValue = lvl2Message;
                 });
             });
 
-            bench('decrypt lvl1', function(done){
-                ioToFunc(PreCrypt.decrypt(level1EncryptedValue, level1PrivateKey), console.log, () => {
+            bench('decrypt lvl1', function (done) {
+                ioToFunc(PreCrypt.decrypt(level1EncryptedValue, level1PrivateKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions());
 
-            bench('decrypt lvl2', function(done){
-                ioToFunc(PreCrypt.decrypt(level2EncryptedValue, level2PrivateKey), console.log, () => {
+            bench('decrypt lvl2', function (done) {
+                ioToFunc(PreCrypt.decrypt(level2EncryptedValue, level2PrivateKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions());
         });
 
-        suite('computePublicKey', (suite) => {
-            let privateKey;
-            const onCycle = () => {
-                privateKey = {bytes: sha256Hash(new Uint8Array([randomSeed++]))};
+        suite('computePublicKey', function (suite) {
+            var privateKey;
+            var onCycle = function () {
+                privateKey = { bytes: sha256Hash(new Uint8Array([randomSeed++])) };
             };
             onCycle();
 
-            bench('computePublicKey', function(done){
-                ioToFunc(PreCrypt.computePublicKey(privateKey), console.log, () => {
+            bench('computePublicKey', function (done) {
+                ioToFunc(PreCrypt.computePublicKey(privateKey), console.log, function () {
                     done.resolve();
                 });
             }, asyncBenchmarkOptions(onCycle));
         });
 
-        suite('deriveSymmetricKey', (suite) => {
-            let plaintext;
-            const onCycle = () => {
+        suite('deriveSymmetricKey', function (suite) {
+            var plaintext;
+            var onCycle = function () {
                 plaintext = generateRandomBytesForLength(FP12_ELEMENT_LENGTH, randomSeed++);
             };
             onCycle();
 
-            bench('deriveSymmetricKey', () => {
+            bench('deriveSymmetricKey', function () {
                 PreCrypt.deriveSymmetricKey(plaintext);
             }, syncBenchmarkOptions(onCycle));
         });
 
-        suite('derivePrivateKey', (suite) => {
-            let plaintext;
-            const onCycle = () => {
+        suite('derivePrivateKey', function (suite) {
+            var plaintext;
+            var onCycle = function () {
                 plaintext = generateRandomBytesForLength(FP12_ELEMENT_LENGTH, randomSeed++);
             };
             onCycle();
 
-            bench('deriveSymmetricKey', () => {
+            bench('deriveSymmetricKey', function () {
                 PreCrypt.derivePrivateKey(plaintext);
             }, syncBenchmarkOptions(onCycle));
         });
     </script>
 </body>
+
 </html>
