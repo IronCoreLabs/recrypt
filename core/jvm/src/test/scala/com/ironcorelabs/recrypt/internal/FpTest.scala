@@ -21,11 +21,20 @@ import Fp.implicits._
 import Arbitraries.fpGen
 import org.scalacheck.Arbitrary
 import spire.implicits._
+import scodec.bits.BitVector
 
 class FpTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
   //Things in here are fundemental operations so tehy should work even for 0
   implicit val fpArb = Arbitrary(fpGen)
+
+  "Fp.apply" should {
+    "yield expected result" in {
+      val result = Fp.Impl(BitVector.bits(List.fill(256)(true)).toByteVector)
+      val expectedResult = Fp.Impl(BigInt("50791539541669591690774546266328002110444626558017560467580438981048945568152"))
+      result shouldBe expectedResult
+    }
+  }
 
   "Fp.negate" should {
     "Always be in Fp" in {
@@ -62,6 +71,23 @@ class FpTest extends com.ironcorelabs.recrypt.TestBase {
           fp.reciprocal shouldBe Fp.Zero
         }
       }
+    }
+  }
+
+  "Fp.ModsByPrime.create" should {
+    import scodec.bits.ByteVector
+    val mods = implicitly[ModsByPrime[Fp]]
+    "Create known value for 64 byte array" in {
+      val thirty_two_bytes = ByteVector.fill(32)(1.toByte)
+      val input = thirty_two_bytes ++ thirty_two_bytes
+      mods.create(input) shouldBe Fp(BigInt("52985480557495246266538294759444418497567570469767957953504536616255684048226"))
+    }
+
+    "Create known value for another 64 byte array" in {
+      val one_bytes = ByteVector.fill(16)(1.toByte)
+      val zero_bytes = ByteVector.fill(16)(0.toByte)
+      val input = zero_bytes ++ one_bytes ++ zero_bytes ++ one_bytes
+      mods.create(input) shouldBe Fp(BigInt("54528517336565915139246673167415770626278933459643464115007152164576808341406"))
     }
   }
 
