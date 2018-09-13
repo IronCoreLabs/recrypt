@@ -46,18 +46,25 @@ class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.Homogene
     k: BigInt,
     sha256: Sha256Hash
   ): Option[SchnorrSignature] = {
-    // If g * k == the zero point, return None. This will only happen if (k mod Curve.Order) == 0
-    generator.times(k).normalize.flatMap {
-      case (px, _) => {
-        val r = positiveMod(px, order)
-        if (r == BigIntZero)
-          // Also need caller to try agian if we end up with a non-zero point that happens to have (x mod Curve.Order) == 0
-          None
-        else {
-          //Create a value that's bigger than the Fp or Fp480 so either one will have a sufficiently large h
-          val h = mods.create(sha256((r, publicKey, message)) ++ sha256((publicKey, message, r)))
-          val s = positiveMod(k - h * privateKey.fp, order)
-          Some(SchnorrSignature(r, s))
+    if (k >= order) {
+      // If g * k == the zero point, return None. This will only happen if (k mod Curve.Order) == 0
+      // Also reject any values for k that are larger than Curve.Order. Though they would wrap around,
+      // this potentially introduces a bias in the signatures. Since the caller should already need
+      // to handle a return of None, just do that for any k >= Curve.Order, and let the caller retry.
+      None
+    } else {
+      generator.times(k).normalize.flatMap {
+        case (px, _) => {
+          val r = positiveMod(px, order)
+          if (r == BigIntZero)
+            // Also need caller to try agian if we end up with a non-zero point that happens to have (x mod Curve.Order) == 0
+            None
+          else {
+            //Create a value that's bigger than the Fp or Fp480 so either one will have a sufficiently large h
+            val h = mods.create(sha256((r, publicKey, message)) ++ sha256((publicKey, message, r)))
+            val s = positiveMod(k - h * privateKey.fp, order)
+            Some(SchnorrSignature(r, s))
+          }
         }
       }
     }
