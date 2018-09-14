@@ -48,10 +48,10 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
   def pair = encryptInstance.pair(Fp.curvePoints.generator, Fp.curvePoints.g1)
 
   @Benchmark
-  def encryptLevel1 = encryptInstance.encrypt(publicKey, plaintext, emphemPrivateKey, publicSigningKey, privateSigningKey)
+  def encryptLevel0 = encryptInstance.encrypt(publicKey, plaintext, emphemPrivateKey, publicSigningKey, privateSigningKey)
 
   @Benchmark
-  def reencryptToLevel2 = encryptInstance.reencrypt(reencryptionKey, encryptedData, raRePrivateKey, raReK, publicSigningKey, privateSigningKey)
+  def reencryptToLevel1 = encryptInstance.reencrypt(reencryptionKey, encryptedData, raRePrivateKey, raReK, publicSigningKey, privateSigningKey)
 
   @Benchmark
   def reencryptionKeyGen = encryptInstance.generateReencryptionKey(
@@ -64,11 +64,11 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
   )
 
   @Benchmark
-  def reencryptToLevel3 = encryptInstance.reencrypt(reencryptionKey, reencryptedValue, privateKey, salt1, publicSigningKey, privateSigningKey)
+  def reencryptToLevel2 = encryptInstance.reencrypt(reencryptionKey, reencryptedValue, privateKey, salt1, publicSigningKey, privateSigningKey)
 
   @Benchmark
-  def decryptLevel1 = encryptInstance.decrypt(privateKey, encryptedData)
+  def decryptLevel0 = encryptInstance.decrypt(privateKey, encryptedData)
 
   @Benchmark
-  def decryptLevel2 = encryptInstance.decrypt(privateKey, reencryptedValue)
+  def decryptLevel1 = encryptInstance.decrypt(privateKey, reencryptedValue)
 }
