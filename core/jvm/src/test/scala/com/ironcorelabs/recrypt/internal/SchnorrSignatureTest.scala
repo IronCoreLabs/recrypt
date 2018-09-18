@@ -47,6 +47,10 @@ class SchnorrSignatureTest extends com.ironcorelabs.recrypt.TestBase {
     "fail to sign if passed Curve.Order for k" in {
       sign(message, Fp.Order) shouldBe None
     }
+    "fail to sign if passed a number greater than Curve.Order for k" in {
+      sign(message, Fp.Order + 1) shouldBe None
+      sign(message, Fp.Prime - 1) shouldBe None
+    }
     "return expected signature" in {
       //  Independently computed signature for this message and keys using Sage
       val sig = sign(message, testK).value
@@ -86,6 +90,12 @@ class SchnorrSignatureTest extends com.ironcorelabs.recrypt.TestBase {
     }
     "fail with Fp480.Order" in {
       sign(message, Fp480.Order) shouldBe None
+    }
+    "fail with Fp480.Order + 1" in {
+      sign(message, Fp480.Order + 1) shouldBe None
+    }
+    "fail with Fp480.Prime - 1" in {
+      sign(message, Fp480.Prime - 1) shouldBe None
     }
   }
 }
