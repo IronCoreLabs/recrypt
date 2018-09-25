@@ -36,7 +36,7 @@ lazy val recryptSettings = Seq(
     "org.typelevel" %%% "spire-laws" % "0.14.1" % "test",
     "org.typelevel" %%% "discipline" % "0.10.0" % "test"
   ) ++ Seq( // Core dependencies.
-    "org.typelevel" %%% "spire" % "0.15.0",
+    "org.typelevel" %%% "spire" % "0.16.0",
     "org.scodec" %%% "scodec-bits" % "1.1.6",
     "org.typelevel" %%% "cats-effect" % "0.10.1"
   ),
