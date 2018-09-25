@@ -133,7 +133,7 @@ lazy val recryptSettings = Seq(
 lazy val commonJvmSettings = Seq(
   testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
-      "com.ironcorelabs" %%% "cats-scalatest" % "2.3.0" % "test"
+      "com.ironcorelabs" %%% "cats-scalatest" % "2.3.1" % "test"
     ),
   scalacOptions ++= Seq(
     "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
