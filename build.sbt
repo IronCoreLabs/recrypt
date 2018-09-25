@@ -183,6 +183,6 @@ lazy val benchmark = project.in(file("benchmark"))
   .settings(coverageEnabled := false)
   .settings(noPublish: _*)
   .settings(  libraryDependencies ++= Seq(
-      "org.abstractj.kalium" % "kalium" % "0.5.0"
+      "org.abstractj.kalium" % "kalium" % "0.8.0"
     ))
   .enablePlugins(JmhPlugin)
