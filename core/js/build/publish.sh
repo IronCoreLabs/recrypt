@@ -72,7 +72,7 @@ cd core/js/build
 if [ "$PUBLISH" == true ]; then
     npm publish --access public
 else
-    irish-pub
+    npm publish --dry-run
 fi
 
 # Cleanup files that we moved into the build directory
