@@ -51,7 +51,7 @@ object Hashable {
   implicit val hashableString: Hashable[String] = by(s => ByteVector.view(s.getBytes("UTF-8")))
 
   implicit def hashableVector[A](implicit hashableA: Hashable[A]): Hashable[Vector[A]] = Hashable.by[Vector[A]] {
-    _.foldLeft(ByteVector.empty) { (acc, a) => hashableA.toByteVector(a) ++ acc }
+    _.foldLeft(ByteVector.empty) { (acc, a) => acc ++ hashableA.toByteVector(a) }
   }
 
   implicit def hashableNonEmptyVector[A: Hashable]: Hashable[NonEmptyVector[A]] = Hashable[Vector[A]].contramap(_.toVector)
