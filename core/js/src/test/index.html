@@ -13,20 +13,17 @@
 <p>Helpers:</p>
 <button onClick="javascript:deriveSymmetricKey()">Derive Symmetric Key</button>
 <button onClick="javascript:derivePublicKey()">Derive Public Key</button>
+
+<hr />
+<p>
+    Note: for this to work you have to compile the js-lib using either <pre>sbt fullOptJS</pre> or <pre>sbt fastOptJS</pre>
+    Then, copy the resulting file from core/js/target/scala-2.12 into the core/js/src/test directory.
+    If you use fastOptJS, uncomment the appropriate line in this index.html file.
+</p>
+
 <script src="https://unpkg.com/sjcl@1.0.6"></script>
 <script src="https://unpkg.com/base64-js@1.2.0/base64js.min.js"></script>
 <script src="https://unpkg.com/tweetnacl@1.0.0/nacl-fast.js"></script>
-<!--
-    you can compile the js-lib using either
-
-    sbt fullOptJS
-
-    or
-
-    sbt fastOptJS
-
-    Then, copy the resulting file from core/js/target/scala-2.12 into the core/js/src/test directory.
--->
 <script src="recrypt-core-opt.js"></script>
 <!--<script src="recrypt-core-fastopt.js"></script>-->
 <script>
