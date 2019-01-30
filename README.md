@@ -138,7 +138,7 @@ Executable from the root
 
 Examples for Javascript API can be found in `core/js/src/test`.
 For them to work, you need to compile the API (see above) and copy the resulting file from `core/js/target/scala-2.12` into the `core/js/src/test` directory.
-If you use fastOptJS, uncomment the appropriate line in this index.html file.
+If you use fastOptJS, uncomment the appropriate line in the html files.
 
 ## Benchmarks
 
