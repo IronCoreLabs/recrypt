@@ -95,7 +95,6 @@
             API.encrypt(plaintext, keys.publicKey, publicSigningKey, privateSigningKey),
             console.error,
             (encValue) => {
-                console.log("HU");
                 console.timeEnd('encrypt');
                 encryptedValue = encValue;
 
