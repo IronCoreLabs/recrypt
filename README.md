@@ -134,7 +134,7 @@ Executable from the root
 * `fastOptJS` - creates a human readable .js file. Faster to create, but larger.
 * `fullOptJS` - fully optimized .js file. Much slower to create.
 
-## ScalaJS Javascript API Examples
+### ScalaJS Javascript API Examples
 
 Examples for Javascript API can be found in `core/js/src/test`.
 For them to work, you need to compile the API (see above) and copy the resulting file from `core/js/target/scala-2.12` into the `core/js/src/test` directory.
