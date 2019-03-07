@@ -56,6 +56,7 @@ final object Fp {
 
   //The leading byte is a 0 since Prime is positive, we don't want that in all the sizes.
   val ExpectedFpLength: Long = Prime.toByteArray.length - 1L
+  val ExpectedOrderLength: Long = Order.toByteArray.length - 1L
 
   /**
    * inverse mod a prime is always in Fp, so the cast is safe.
