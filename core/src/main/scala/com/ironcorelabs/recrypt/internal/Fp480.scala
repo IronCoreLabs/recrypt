@@ -55,6 +55,7 @@ final object Fp480 {
 
   //The leading byte is a 0 since Prime is positive, we don't want that in all the sizes.
   val ExpectedFp480Length: Long = Prime.toByteArray.length - 1L
+  val ExpectedOrderLength: Long = Order.toByteArray.length - 1L
 
   def bigIntToByteVector(b: BigInt): ByteVector = {
     val zeroByte = 0.toByte

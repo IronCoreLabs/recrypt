@@ -45,7 +45,7 @@ class CoreApi(
   private val encryptInstance = new internal.InternalApi(sha256, signing, curvePoints)
   private val privateKeys = randomByteVector.map(PrivateKey(_))
   private val publicKeyGen = curvePoints.publicKeyGen
-  private val schnorrSigning = new internal.SchnorrSigning[internal.Fp](curvePoints.generator, internal.Fp.Order)
+  private val schnorrSigning = new internal.SchnorrSigning[internal.Fp](curvePoints.generator, internal.Fp.Order, internal.Fp.ExpectedOrderLength)
   private val randomFp = randomByteVector.map(internal.Fp(_))
 
   /**

@@ -46,8 +46,6 @@ object Hashable {
 
   implicit val hashableByte: Hashable[Byte] = by(ByteVector.fromByte)
 
-  implicit val hashableBigInt: Hashable[BigInt] = by(bigInt => ByteVector.view(bigInt.toByteArray))
-
   implicit val hashableString: Hashable[String] = by(s => ByteVector.view(s.getBytes("UTF-8")))
 
   implicit def hashableVector[A](implicit hashableA: Hashable[A]): Hashable[Vector[A]] = Hashable.by[Vector[A]] {

@@ -20,12 +20,23 @@ package com.ironcorelabs.recrypt.internal
 import spire.algebra.Field
 import spire.implicits._
 import cats.Eq
+import scodec.bits.ByteVector
 
 //  Both r and s will be positive values less than the order that was used to produce it.
 //  r will be greater than zero.
 final case class SchnorrSignature(r: BigInt, s: BigInt)
 
-class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.HomogeneousPoint[B], order: BigInt)(implicit mods: ModsByPrime[B]) {
+class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.HomogeneousPoint[B], order: BigInt, frByteSize: Long)(implicit mods: ModsByPrime[B]) {
+  //Defining this locally as it's possibly not what some people would want.
+  //We want to drop all the leading 0s and ensure that the value is padded to the correct length for Fr.
+  implicit val hashableBigInt: Hashable[BigInt] = Hashable.by(bigIntToByteVector)
+  private def bigIntToByteVector(b: BigInt): ByteVector = {
+    val zeroByte = 0.toByte
+    val byteVector = ByteVector.view(b.toByteArray)
+    //Drop the leading zero if there is one (Because this value is positive.) Then make sure that the
+    //byteVector is padded out to frByteSize
+    byteVector.dropWhile(_ == zeroByte).padLeft(frByteSize)
+  }
   val publicKeyGen = PublicKeyGen(generator)
   /**
    * Sign a message using our PRE privateKey. Also requires the corresponding (augmented) public key, which is
