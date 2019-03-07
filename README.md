@@ -9,6 +9,10 @@ This is a library that implements a set of cryptographic primitives that are nee
 
 The library is implemented in Scala, and the build produces a `.jar` you can use with Java applications. It also cross-compiles to Javascript, so you can use the library in web applications to add end-to-end encryption.
 
+# State of Development
+
+This library is in the process of being replaced by a version implemented in Rust. The Rust library will have a binding to Java that can be used in environments where the library produced by this recrypt repository would have been used. The Rust library is available at [recrypt-rs](https://github.com/IronCoreLabs/recrypt-rs). All new improvements and performance enhancement efforts are focused on the Rust implementation, and there is a related project, [recrypt-wasm-binding](https://github.com/IronCoreLabs/recrypt-wasm-binding), that is a WebAssembly binding that allows the Rust recrypt library to be used in a browser. This is a significantly better alternative for using Recrypt in any modern browser than the Javascript generated from this recrypt repository.
+
 # Proxy Re-Encryption
 
 A proxy re-encryption (PRE) scheme is a public-key encryption scheme, meaning that each participant has a pair of related keys, one public and one private. If Alice wants to encrypt a message so that only Bob can read it, she obtains Bob's public key and uses the public key encryption algorithm to secure the message. When Bob receives the encrypted message, he uses his private key to decrypt it and recover the original message.
