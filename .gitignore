@@ -26,3 +26,4 @@ tmp
 .cache-tests
 *.sublime-workspace
 *.sublime-project
+.metals/
