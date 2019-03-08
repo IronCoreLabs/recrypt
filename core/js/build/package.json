@@ -1,6 +1,6 @@
 {
   "name": "@ironcorelabs/recryptjs",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "author": "IronCore Labs",
   "license": "AGPL-3.0",
   "description": "IronCore Labs Transform Encryption library in Javascript",
