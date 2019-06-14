@@ -20,15 +20,12 @@ package recryptjs
 import scala.scalajs.js
 import js.typedarray._
 
-import js.annotation.ScalaJSDefined
-
 /**
  * All of the datatypes in this file are simply mirrors of their scala counterparts, but with Uint8Arrays instead of the ByteVector that we
  * use internally. They're provided for interop purposes only and none of the apis will work with them directly. This is to increase safety
  * while providing a reasonable API for JS.
  */
 
-@ScalaJSDefined
 class EncryptedValue(
   val ephemeralPublicKey: PublicKey, //Public key which was used to produce the encyptedMessage
   val encryptedMessage: EncryptedMessage, //The encrypted message
@@ -38,43 +35,30 @@ class EncryptedValue(
   val signature: Signature
 ) extends js.Object
 
-@ScalaJSDefined
 class Keys(val privateKey: PrivateKey, val publicKey: PublicKey) extends js.Object
 
-@ScalaJSDefined
 class PrivateKey(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class PublicKey(val x: Uint8Array, val y: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class Plaintext(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class DecryptedSymmetricKey(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class EncryptedMessage(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class Signature(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class PublicSigningKey(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class PrivateSigningKey(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class HashedValue(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class EncryptedTempKey(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class AuthHash(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class TransformBlock(
   val publicKey: PublicKey,
   val encryptedTempKey: EncryptedTempKey,
@@ -83,7 +67,6 @@ class TransformBlock(
   val randomTransformEncryptedTempKey: EncryptedTempKey
 ) extends js.Object
 
-@ScalaJSDefined
 class TransformKey(
   val ephemeralPublicKey: PublicKey, //The ephemeral public key who encrypted the value
   val toPublicKey: PublicKey, //The person or device that can decrypt the result
@@ -93,11 +76,8 @@ class TransformKey(
   val signature: Signature
 ) extends js.Object
 
-@ScalaJSDefined
 class TransformKeyBytes(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class SchnorrMessage(val bytes: Uint8Array) extends js.Object
 
-@ScalaJSDefined
 class SchnorrSignature(val bytes: Uint8Array) extends js.Object

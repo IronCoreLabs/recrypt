@@ -1,4 +1,5 @@
-.ensime*
+**/.bloop
+.metals
 .DS_Store
 .cache
 .cache/

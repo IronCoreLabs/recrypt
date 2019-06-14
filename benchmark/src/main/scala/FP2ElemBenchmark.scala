@@ -35,8 +35,8 @@ class FP2ElemBenchmark extends BenchmarkHelper {
   def squareFP2 = elements.foldLeft(point)((acc, _) => acc.square)
 
   @Benchmark
-  def scaleFp2Times100 = elements.foldLeft(point)((acc, p) => acc * 100)
+  def scaleFp2Times100 = elements.foldLeft(point)((acc, _) => acc * 100)
 
   @Benchmark
-  def powFp2By100 = elements.foldLeft(point)((acc, p) => acc ^ 100)
+  def powFp2By100 = elements.foldLeft(point)((acc, _) => acc ^ 100)
 }
