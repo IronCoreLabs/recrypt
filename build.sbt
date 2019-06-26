@@ -9,7 +9,7 @@ lazy val noPublish = Seq(
 lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
   licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.8",
   headerLicense := Some(HeaderLicense.Custom(
     """|Copyright (C) 2017-present  IronCore Labs
        |
@@ -143,8 +143,8 @@ lazy val commonJvmSettings = Seq(
 lazy val commonJsSettings = Seq(
   scalaJSStage in Global := FastOptStage,
   parallelExecution := false,
-  requiresDOM := false,
   jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
+  scalacOptions ++= Seq("-P:scalajs:sjsDefinedByDefault"),
   scalaJSModuleKind := (if(scala.sys.env.get("SCALA_JS_COMMON_JS").isDefined) ModuleKind.CommonJSModule else ModuleKind.NoModule),
   // batch mode decreases the amount of memory needed to compile scala.js code
   scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(scala.sys.env.get("TRAVIS").isDefined))
