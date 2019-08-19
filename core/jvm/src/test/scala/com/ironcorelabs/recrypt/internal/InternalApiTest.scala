@@ -197,6 +197,14 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
     }
   }
 
+  "PrivateKey +" should {
+    "add two PrivateKeys modding by prime" in {
+      val privateKey1 = PrivateKey(Fp(BigInt("-22")))
+      val privateKey2 = PrivateKey(Fp(BigInt("55")))
+      privateKey1 + privateKey2 shouldBe PrivateKey(Fp(BigInt("33")))
+    }
+  }
+
   "encrypt" should {
     val privateKey = PrivateKey(Fp(BigInt("-22")))
     val ephemeralSecretKey = BigInt("42")

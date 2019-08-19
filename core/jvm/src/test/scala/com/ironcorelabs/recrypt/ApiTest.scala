@@ -40,6 +40,14 @@ class ApiTest extends TestBase {
   //This is very clearly not a "correct" signature, but it does test that the message calculated on verify is correct.
   val api = new Api(randomIO, Ed25519Signing((_, bytes) => Signature(bytes), (_, message, sig) => message == sig.bytes))
 
+  "augmentPrivateKey" should {
+    "compute the sum of two PrivateKeys" in {
+      val p1 = PrivateKey(ByteVector.view(Array[Byte](4, 8, 15, 16, 23, 42)))
+      val p2 = PrivateKey(ByteVector.view(Array[Byte](42, 37, 73, 13, 100, 12)))
+      api.augmentPrivateKey(p1, p2) shouldBe PrivateKey(ByteVector.view(Array[Byte](46, 45, 88, 29, 123, 54)))
+    }
+  }
+
   "end to end encrypt/decrypt" should {
     "yield expected result using unaugmented keys" in {
       val io = for {
