@@ -67,6 +67,9 @@ class CoreApi(
     //Realistically this should never happen because the private key shouldn't contain a value that goes to the zero point.
     .getOrElse(throw new Exception("privateKey was invalid.")))
 
+  def augmentPrivateKey(p1: PrivateKey, p2: PrivateKey): PrivateKey =
+    PrivateKey(internal.Fp.bigIntToByteVector((privateKeyTransform(p1) + privateKeyTransform(p2)).toBigInt))
+
   /**
    * Using the randomBytes, generate a random element of G_T, which is one of the rth roots of unit in FP12.
    */

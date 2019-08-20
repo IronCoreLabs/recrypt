@@ -37,9 +37,9 @@ final case class PublicKeyGen[FpType <: BigInt](generator: HomogeneousPoint[FpTy
 
 //Maybe this should be arbitrary bytes, but it should be functionally identical.
 final case class PrivateKey[FpType <: BigInt](fp: FpType) extends AnyVal {
-  // def toByteVector: ByteVector = ByteVector(toBigInt.toByteArray)
   override def toString: String = "<PRIVATE KEY>"
   def toBigInt: BigInt = fp
+  def +(that: PrivateKey[FpType])(implicit mods: ModsByPrime[FpType]) = PrivateKey(mods.create(this.fp + that.fp))
 }
 
 object PrivateKey {
