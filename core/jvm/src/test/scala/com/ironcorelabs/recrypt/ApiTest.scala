@@ -44,7 +44,9 @@ class ApiTest extends TestBase {
     "compute the sum of two PrivateKeys" in {
       val p1 = PrivateKey(ByteVector.view(Array[Byte](4, 8, 15, 16, 23, 42)))
       val p2 = PrivateKey(ByteVector.view(Array[Byte](42, 37, 73, 13, 100, 12)))
-      api.augmentPrivateKey(p1, p2) shouldBe PrivateKey(ByteVector.view(Array[Byte](46, 45, 88, 29, 123, 54)))
+      val bvSum = ByteVector.view(Array[Byte](46, 45, 88, 29, 123, 54))
+      // augmentPrivateKey will pad the PrivateKeys, so the rhs must be padded as well
+      api.augmentPrivateKey(p1, p2) shouldBe PrivateKey(internal.Fp.bigIntToByteVector(internal.Fp(bvSum)))
     }
   }
 
