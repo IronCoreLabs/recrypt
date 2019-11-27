@@ -6,7 +6,7 @@ addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.6.1")
 
 addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.3.7")
 
-addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.29")
+addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.31")
 
 addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.12")
 
