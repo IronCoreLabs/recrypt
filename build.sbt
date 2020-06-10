@@ -37,7 +37,7 @@ lazy val recryptSettings = Seq(
     "org.typelevel" %%% "discipline" % "0.10.0" % "test"
   ) ++ Seq( // Core dependencies.
     "org.typelevel" %%% "spire" % "0.15.0",
-    "org.scodec" %%% "scodec-bits" % "1.1.15",
+    "org.scodec" %%% "scodec-bits" % "1.1.16",
     "org.typelevel" %%% "cats-effect" % "2.1.3"
   ),
   //List is from https://tpolecat.github.io/2017/04/25/scalac-flags.html
