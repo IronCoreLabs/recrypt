@@ -4,7 +4,7 @@ addSbtPlugin("org.scalariform"    % "sbt-scalariform"        % "1.8.3")
 
 addSbtPlugin("org.scoverage"      % "sbt-scoverage"          % "1.6.1")
 
-addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.3.7")
+addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.4.0")
 
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.33")
 
