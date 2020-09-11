@@ -19,15 +19,15 @@ package com.ironcorelabs.recrypt
 
 import org.scalatest.{ BeforeAndAfterAll, Matchers, OptionValues, WordSpec }
 import cats.scalatest.EitherValues
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalacheck.{ Prop, Properties }
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 abstract class TestBase
   extends WordSpec
   with Matchers
   with OptionValues
   with BeforeAndAfterAll
-  with GeneratorDrivenPropertyChecks
+  with ScalaCheckDrivenPropertyChecks
   with EitherValues {
   //scalacheck dropped properties inheriting Prop in 1.13.
   //see https://github.com/rickynils/scalacheck/issues/254
