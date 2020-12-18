@@ -28,3 +28,6 @@ tmp
 *.sublime-workspace
 *.sublime-project
 .metals/
+.bsp
+.vscode
+project/metals.sbt
