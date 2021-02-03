@@ -1,5 +1,5 @@
-import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.scalaJSModuleKind
 import scalariform.formatter.preferences._
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 
 lazy val noPublish = Seq(
   publish := {},
@@ -31,12 +31,12 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.9" % "test",
-    "org.scalacheck" %%% "scalacheck" % "1.15.0" % "test",
-    "org.typelevel" %%% "spire-laws" % "0.14.1" % "test",
-    "org.typelevel" %%% "discipline" % "0.10.0" % "test"
-  ) ++ Seq( // Core dependencies.
-    "org.typelevel" %%% "spire" % "0.15.0",
+    "org.scalatest" %%% "scalatest" % "3.2.3" % "test",
+    "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test",
+    "org.typelevel" %%% "spire-laws" % "0.17.0" % "test",
+    "org.typelevel" %%% "discipline-scalatest" % "2.1.1" %"test",
+    ) ++ Seq( // Core dependencies.
+    "org.typelevel" %%% "spire" % "0.17.0",
     "org.scodec" %%% "scodec-bits" % "1.1.18",
     "org.typelevel" %%% "cats-effect" % "2.1.4"
   ),
@@ -128,26 +128,17 @@ lazy val recryptSettings = Seq(
   coverageMinimum := 80,
   coverageFailOnMinimum := true,
   //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
-  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value)
+  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,    crossScalaVersions := Seq(scalaVersion.value, "2.13.1"))
 
 lazy val commonJvmSettings = Seq(
   testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
-      "com.ironcorelabs" %%% "cats-scalatest" % "2.4.0" % "test"
+      "com.ironcorelabs" %%% "cats-scalatest" % "3.1.1" % "test"
     ),
   scalacOptions ++= Seq(
     "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
   )
 )
-
-lazy val commonJsSettings = Seq(
-  scalaJSStage in Global := FastOptStage,
-  parallelExecution := false,
-  jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
-  scalacOptions ++= Seq("-P:scalajs:sjsDefinedByDefault"),
-  scalaJSModuleKind := (if(scala.sys.env.get("SCALA_JS_COMMON_JS").isDefined) ModuleKind.CommonJSModule else ModuleKind.NoModule),
-  // batch mode decreases the amount of memory needed to compile scala.js code
-  scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(scala.sys.env.get("TRAVIS").isDefined))
 
 //Master project which aggregates all the sub projects.
 lazy val recrypt = project
@@ -159,13 +150,13 @@ lazy val recrypt = project
   .dependsOn(coreJVM, coreJS, benchmark)
 
 //The core project, which has both js and JVM targets (under .js and .jvm)
-lazy val core =  crossProject.crossType(RecryptCrossType)
+lazy val core =  crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Full)
   .in(file("core"))
   .settings(name := "recrypt-core")
   .settings(moduleName := "recrypt-core")
   .settings(recryptSettings: _*)
   .disablePlugins(JmhPlugin)
-  .jsSettings(commonJsSettings: _*)
   .jsSettings(coverageEnabled := false)
   .jvmSettings(commonJvmSettings: _*)
   .jvmConfigure(_.enablePlugins(AutomateHeaderPlugin))

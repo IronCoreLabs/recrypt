@@ -17,13 +17,15 @@
 
 package com.ironcorelabs.recrypt
 
-import org.scalatest.{ BeforeAndAfterAll, Matchers, OptionValues, WordSpec }
+import org.scalatest.{ BeforeAndAfterAll, OptionValues }
 import cats.scalatest.EitherValues
 import org.scalacheck.{ Prop, Properties }
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 abstract class TestBase
-  extends WordSpec
+  extends AnyWordSpec
   with Matchers
   with OptionValues
   with BeforeAndAfterAll
