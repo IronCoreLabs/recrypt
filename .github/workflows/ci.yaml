@@ -5,12 +5,83 @@ on:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git branch or tag to build
+        required: true
+      bump:
+        description: Bump version? true/false
+        required: false
 
 jobs:
+  get_version:
+    # get_version figures out what version and git revision we're using. If this is a PR, and the version here is the same as on
+    # the default branch, then increment the version here and commit it.
+    outputs:
+      version: ${{ steps.this_version.outputs.version }}
+      git_ref: ${{ steps.this_version.outputs.ref }}
+    runs-on: ubuntu-18.04
+    steps:
+      # Check out the default branch and parse its version.
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Parse version
+        id: main_version
+        run: |
+          VERS=$(sed -e 's/^[^"]*"//' -e 's/"$//' -e 's/-SNAPSHOT$//' < version.sbt)
+          echo "version = ${VERS}"
+          # Sanity check.
+          [[ "${VERS}" =~ ^[0-9.]*$ ]]
+          echo "::set-output name=version::${VERS}"
+
+      # Check out the version that triggered this workflow.
+      - uses: actions/checkout@v2
+        if: github.event_name == 'pull_request'
+        # Ask for the PR branch instead of the merge ref.
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/checkout@v2
+        if: github.event_name == 'workflow_dispatch'
+        # Grab the version specified by the user.
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - uses: actions/checkout@v2
+        if: github.event_name != 'pull_request' && github.event_name != 'workflow_dispatch'
+
+      - name: Parse version and maybe increment
+        id: this_version
+        run: |
+          VERS=$(sed -e 's/^[^"]*"//' -e 's/"$//' -e 's/-SNAPSHOT$//' < version.sbt)
+          echo "version = ${VERS}"
+          [[ "${VERS}" =~ ^[0-9.]*$ ]]
+          if { [ "${{ github.event_name }}" = "pull_request" ] && [ "${{ steps.main_version.outputs.version }}" = "${VERS}" ] ; } \
+              || [ "${{ github.event.inputs.bump }}" = "true" ]; then
+            # We need to increment the version.
+            # Configure Git.
+            git config --global user.email "ops@ironcorelabs.com"
+            git config --global user.name "${{ github.repository }} CI"
+            # Increment the version and sanity check.
+            VERS=$(echo ${{ steps.main_version.outputs.version }} | awk -F. -v OFS=. '{$NF++;print}')
+            echo "version = ${VERS}"
+            [[ "${VERS}" =~ ^[0-9.]{3,}$ ]]
+            # Edit the file.
+            sed -i -e "s/\".*\"$/\"${VERS}-SNAPSHOT\"/" version.sbt
+            # Commit and push.
+            git commit -m "Increment version" version.sbt
+            git push
+          fi
+          echo "::set-output name=version::${VERS}"
+          echo "::set-output name=ref::$(git rev-parse HEAD)"
+
   build:
+    needs: get_version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.get_version.outputs.git_ref }}
       - name: Set up JDK 11
         uses: olafurpg/setup-scala@v10
         with:
@@ -24,3 +95,6 @@ jobs:
           key: sbt-${{ hashFiles('**/build.sbt') }}
       - name: Run tests
         run: csbt +compile +test scalastyle
+      - name: Clean the scala cache
+        # https://www.scala-sbt.org/1.x/docs/Travis-CI-with-sbt.html#Caching
+        run: find ${HOME}/.sbt -name '*.lock' -print -delete
