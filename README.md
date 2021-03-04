@@ -1,7 +1,7 @@
-Recrypt
-==========================
-[![Build Status](https://travis-ci.org/IronCoreLabs/recrypt.svg?branch=master)](https://travis-ci.org/IronCoreLabs/recrypt)
-[![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt/coverage.svg?branch=master)](https://codecov.io/github/IronCoreLabs/recrypt?branch=master)
+# Recrypt
+
+[![CI](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml/badge.svg)](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml)
+[![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt/coverage.svg?branch=main)](https://codecov.io/github/IronCoreLabs/recrypt?branch=main)
 [![scaladoc](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12)
 [![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Frecryptjs.svg)](https://www.npmjs.com/package/@ironcorelabs/recryptjs)
 
@@ -19,7 +19,7 @@ A proxy re-encryption (PRE) scheme is a public-key encryption scheme, meaning th
 
 PRE allows someone (the _delegator_) to delegate the ability to decrypt her messages to another person (the _delegatee_). In a standard public-key cryptosystem, the delegator would just need to share her private key with the delegatee. This allows the delegatee to access the encrypted messages, but when the delegator wants to revoke the access, she cannot be absolutely sure the delegatee will discard his copy of the private key. With proxy re-encryption, the delegator computes a _re-encryption key_ (or _transform key_) that will allow messages encrypted to her public key to be transformed so they are encrypted to the delegatee's public key. Computing this transform key requires the delegator's private key and the delegatee's public key; once it is computed, the key is stored on a _semi-trusted proxy_.
 
-The proxy receives messages intended for the delegator, applies the transform algorithm using the transform key, and delivers the transformed message to the delegatee. __The proxy does not need to be trusted, because possession of the transform key does not allow the proxy to recover any information about either the delegator's or the delegatee's private keys.__ The delegatee cannot collaborate with proxy to recover any information about the delegator's private key.
+The proxy receives messages intended for the delegator, applies the transform algorithm using the transform key, and delivers the transformed message to the delegatee. **The proxy does not need to be trusted, because possession of the transform key does not allow the proxy to recover any information about either the delegator's or the delegatee's private keys.** The delegatee cannot collaborate with proxy to recover any information about the delegator's private key.
 
 When the delegator no longer wants to delegate access, she just requests that the proxy discard the transform key. She must trust the proxy to perform this action.
 
@@ -82,7 +82,7 @@ The NCC Group has conducted an audit of this library - we have a blog post about
 
 ## Project structure
 
-The project is currently all inside the `core` target. 
+The project is currently all inside the `core` target.
 
 ```
 └── core                                [main project]
@@ -105,13 +105,14 @@ The project is currently all inside the `core` target.
                     └── internal        [internal concepts/structures]
 ```
 
-Good places to start exploring are 
-* core/js/src - com.ironcorelabs.recrypt.Api (JavaScript API)
-* core/src/main/scala - com.ironcorelabs.recrypt.CoreApi (Scala API)
+Good places to start exploring are
+
+- core/js/src - com.ironcorelabs.recrypt.Api (JavaScript API)
+- core/src/main/scala - com.ironcorelabs.recrypt.CoreApi (Scala API)
 
 ## Building
 
-Recrypt requires openjdk8 and sbt 0.13.x and is known to build under Linux and MacOSX. 
+Recrypt requires openjdk8 and sbt 0.13.x and is known to build under Linux and MacOSX.
 
 https://github.com/paulp/sbt-extras can be used to get sbt.
 
@@ -129,14 +130,14 @@ To run tests just run `sbt test` from the root of the project. This will test ev
 
 The `core` project supports ScalaJS. All code at `core/src` is compiled for both JVM and JS. Code in `core/js/src` is JavaScript specific and code in `core/jvm/src` is JVM only.
 
-Since ScalaJS doesn't support Scalatest, all tests only execute on the JVM. 
+Since ScalaJS doesn't support Scalatest, all tests only execute on the JVM.
 
 ### ScalaJS specific sbt targets
 
 Executable from the root
 
-* `fastOptJS` - creates a human readable .js file. Faster to create, but larger.
-* `fullOptJS` - fully optimized .js file. Much slower to create.
+- `fastOptJS` - creates a human readable .js file. Faster to create, but larger.
+- `fullOptJS` - fully optimized .js file. Much slower to create.
 
 ### ScalaJS Javascript API Examples
 
@@ -148,11 +149,12 @@ If you use fastOptJS, uncomment the appropriate line in the html files.
 
 ### Scala
 
-Running the benchmarks in scala requires `libsodium-dev`. Any recent binary version from a package manager should be fine. 
+Running the benchmarks in scala requires `libsodium-dev`. Any recent binary version from a package manager should be fine.
 
-See https://github.com/jedisct1/libsodium  
+See https://github.com/jedisct1/libsodium
 
 This version is known to work on Ubuntu 16.04
+
 ```
 libsodium-dev/xenial,now 1.0.8-5 amd64 [installed]
   Network communication, cryptography and signaturing library - headers
@@ -162,13 +164,12 @@ To run the benchmarks, run the following from sbt:
 
 `benchmark/jmh:run -wi 10 -i 15 -f1 -t1 bench.*`
 
-
 The parameters used here are:
 
- * `-wi`: the number of times to run during warmup
- * `-i`: the number of times to each benchmark
- * `-f`: the number of processes to use during benchmarking
- * `-t`: the number of threads to use during benchmarking
+- `-wi`: the number of times to run during warmup
+- `-i`: the number of times to each benchmark
+- `-f`: the number of processes to use during benchmarking
+- `-t`: the number of threads to use during benchmarking
 
 The above command will use a single thread warming up 10 times on each and running each test 15 times.
 
@@ -182,13 +183,10 @@ To setup the JS benchmarks, run the following from `sbt`:
 
 This will generate the fully optimized JS build. Then go into the `core/js/src/test` directory and create a local symlink to the build file via `ln -s ../../target/scala-2.12/recrypt-core-opt.js recrypt-core-opt.js`. Then startup a local server in that directory (via Python, `python -m SimpleHTTPServer`) and go to `localhost:8000/benchmark.html` to run the benchmarks in your browser.
 
-
 # License
-
 
 Recrypt is licensed under the [GNU Affero General Public License](LICENSE).
 We also offer commercial licenses - [email](mailto:info@ironcorelabs.com) for more information.
 
-
-Copyright (c)  2017-present  IronCore Labs, Inc.
+Copyright (c) 2017-present IronCore Labs, Inc.
 All rights reserved.

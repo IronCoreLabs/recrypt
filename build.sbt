@@ -149,7 +149,7 @@ lazy val commonJsSettings = Seq(
   // batch mode decreases the amount of memory needed to compile scala.js code
   scalaJSOptimizerOptions := scalaJSOptimizerOptions.value.withBatchMode(scala.sys.env.get("TRAVIS").isDefined))
 
-//Master project which aggregates all the sub projects.
+//Main project which aggregates all the sub projects.
 lazy val recrypt = project
   .in(file("."))
   .settings(moduleName := "recrypt")

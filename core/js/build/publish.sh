@@ -6,10 +6,10 @@ set -e
 PUBLISH=false
 ROOT_PUBLISH_DIR=$(dirname "$0")
 
-function ensure_up_to_date_master_branch() {
-    # Force current branch to be master when publishing
-    if [ "$(git symbolic-ref --short -q HEAD)" != "master" ]; then
-        echo "Library can only be published off 'master'."
+function ensure_up_to_date_main_branch() {
+    # Force current branch to be main when publishing
+    if [ "$(git symbolic-ref --short -q HEAD)" != "main" ]; then
+        echo "Library can only be published off 'main'."
         exit -1
     fi
 
@@ -54,7 +54,7 @@ do
 done
 
 if [ "$PUBLISH" == true ]; then
-    ensure_up_to_date_master_branch
+    ensure_up_to_date_main_branch
 fi
 
 rm -f "$ROOT_PUBLISH_DIR/index.js"
