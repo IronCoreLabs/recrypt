@@ -18,15 +18,15 @@
 package com.ironcorelabs.recrypt.internal
 
 import point.HomogeneousPoint
-import org.scalatest.FunSuite
 import org.typelevel.discipline.scalatest.Discipline
 import org.typelevel.discipline.Predicate
 import org.scalacheck.Arbitrary
 import spire.laws.RingLaws
 import Fp.implicits._
 import Fp480.implicits._
+import org.scalatest.funsuite.AnyFunSuite
 
-class FieldLawTests extends FunSuite with Discipline {
+class FieldLawTests extends AnyFunSuite with Discipline {
   import Arbitraries._
   //Additive laws permit all elements.
   implicit def pred[A]: Predicate[A] = Predicate.const(true)
