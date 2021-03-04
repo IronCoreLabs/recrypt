@@ -8,7 +8,7 @@ addSbtPlugin("pl.project13.scala" % "sbt-jmh"                % "0.4.0")
 
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"            % "0.6.33")
 
-addSbtPlugin("com.github.gseitz"  % "sbt-release"            % "1.0.13")
+addSbtPlugin("com.github.sbt"  % "sbt-release"            % "1.0.15")
 
 addSbtPlugin("de.heikoseeberger"  % "sbt-header"             % "5.6.0")
 
