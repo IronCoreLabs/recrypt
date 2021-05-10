@@ -21,6 +21,6 @@ jobs:
           path: |
             ~/.cache/coursier
             ~/.sbt
-          key: sbt-${{ hashFiles('**/build.sbt') }}
+          key: sbt-${{ hashFiles('**/build.sbt', '**/build.properties') }}
       - name: Run tests
         run: csbt +compile +test scalastyle
