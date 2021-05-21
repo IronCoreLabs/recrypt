@@ -18,8 +18,12 @@
 package com.ironcorelabs.recrypt
 
 import scodec.bits.ByteVector
+import java.security.MessageDigest
 
 final object Sha256 extends (ByteVector => ByteVector) {
-  private[this] val sha256Inner = java.security.MessageDigest.getInstance("SHA-256")
-  def apply(bytes: ByteVector): ByteVector = ByteVector.view(sha256Inner.digest(bytes.toArray))
+  //Since message digests are not thread safe, this should never be used directly.
+  //Instead use getSha256Copy.
+  private[this] val emptySha256 = MessageDigest.getInstance("SHA-256")
+  private def getSha256Copy: MessageDigest = emptySha256.clone().asInstanceOf[MessageDigest]
+  def apply(bytes: ByteVector): ByteVector = ByteVector.view(getSha256Copy.digest(bytes.toArray))
 }

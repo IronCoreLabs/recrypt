@@ -9,7 +9,7 @@ lazy val noPublish = Seq(
 lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
   licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
-  scalaVersion := "2.12.11",
+  scalaVersion := "2.12.13",
   headerLicense := Some(HeaderLicense.Custom(
     """|Copyright (C) 2017-present  IronCore Labs
        |
@@ -128,17 +128,15 @@ lazy val recryptSettings = Seq(
   coverageMinimum := 80,
   coverageFailOnMinimum := true,
   //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
-  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,    crossScalaVersions := Seq(scalaVersion.value, "2.13.1"))
-
-lazy val commonJvmSettings = Seq(
-  testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
+  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,    crossScalaVersions := Seq(scalaVersion.value, "2.13.1"),
+    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
       "com.ironcorelabs" %%% "cats-scalatest" % "3.1.1" % "test"
     ),
   scalacOptions ++= Seq(
     "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
-  )
-)
+  ))
+
 
 //Master project which aggregates all the sub projects.
 lazy val recrypt = project
@@ -146,29 +144,11 @@ lazy val recrypt = project
   .settings(moduleName := "recrypt")
   .settings(recryptSettings)
   .settings(noPublish: _*)
-  .aggregate(coreJVM, coreJS, benchmark)
-  .dependsOn(coreJVM, coreJS, benchmark)
 
-//The core project, which has both js and JVM targets (under .js and .jvm)
-lazy val core =  crossProject(JVMPlatform, JSPlatform)
-  .crossType(CrossType.Full)
-  .in(file("core"))
-  .settings(name := "recrypt-core")
-  .settings(moduleName := "recrypt-core")
-  .settings(recryptSettings: _*)
-  .disablePlugins(JmhPlugin)
-  .jsSettings(coverageEnabled := false)
-  .jvmSettings(commonJvmSettings: _*)
-  .jvmConfigure(_.enablePlugins(AutomateHeaderPlugin))
-  .jsConfigure(_.enablePlugins(AutomateHeaderPlugin))
-
-//Targets that are JVM and js specific. Really just aliases.
-lazy val coreJVM = core.jvm
-lazy val coreJS = core.js
 
 //Benchmark target for running perf tests.
 lazy val benchmark = project.in(file("benchmark"))
-  .dependsOn(coreJVM)
+  .dependsOn(recrypt)
   .settings(name := "recrypt-benchmark")
   .settings(recryptSettings: _*)
   .settings(coverageEnabled := false)
