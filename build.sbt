@@ -128,7 +128,7 @@ lazy val recryptSettings = Seq(
   coverageMinimum := 80,
   coverageFailOnMinimum := true,
   //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
-  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,    crossScalaVersions := Seq(scalaVersion.value, "2.13.1"),
+  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,
     testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
       "com.ironcorelabs" %%% "cats-scalatest" % "3.1.1" % "test"
@@ -141,9 +141,8 @@ lazy val recryptSettings = Seq(
 //Master project which aggregates all the sub projects.
 lazy val recrypt = project
   .in(file("."))
-  .settings(moduleName := "recrypt")
+  .settings(moduleName := "recrypt-core")
   .settings(recryptSettings)
-  .settings(noPublish: _*)
 
 
 //Benchmark target for running perf tests.

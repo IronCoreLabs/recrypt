@@ -7,11 +7,11 @@
 
 This is a library that implements a set of cryptographic primitives that are needed for a _multi-hop proxy re-encryption_ scheme.
 
-The library is implemented in Scala, and the build produces a `.jar` you can use with Java applications. It also cross-compiles to Javascript, so you can use the library in web applications to add end-to-end encryption.
+The library is implemented in Scala, and the build produces a `.jar` you can use with Java applications.
 
 # State of Development
 
-This library is in the process of being replaced by a version implemented in Rust. The Rust library will have a binding to Java that can be used in environments where the library produced by this recrypt repository would have been used. The Rust library is available at [recrypt-rs](https://github.com/IronCoreLabs/recrypt-rs). All new improvements and performance enhancement efforts are focused on the Rust implementation, and there is a related project, [recrypt-wasm-binding](https://github.com/IronCoreLabs/recrypt-wasm-binding), that is a WebAssembly binding that allows the Rust recrypt library to be used in a browser. This is a significantly better alternative for using Recrypt in any modern browser than the Javascript generated from this recrypt repository.
+This library is in the process of being replaced by a version implemented in Rust. The Rust library will have a binding to Java that can be used in environments where the library produced by this recrypt repository would have been used. The Rust library is available at [recrypt-rs](https://github.com/IronCoreLabs/recrypt-rs). All new improvements and performance enhancement efforts are focused on the Rust implementation, and there is a related project, [recrypt-wasm-binding](https://github.com/IronCoreLabs/recrypt-wasm-binding), that is a WebAssembly binding that allows the Rust recrypt library to be used in a browser.
 
 # Proxy Re-Encryption
 
@@ -60,6 +60,7 @@ Our implementation was guided by the following papers:
 - "High-Speed Software Implementation of the Optimal Ate Pairing over Barreto-Naehrig Curves" by J. Beuchat et al., published in _Proceedings from the 4th International Conference on Pairing-Based Cryptography_, 2010, pp. 21-39.
 
 - "Implementing Cryptographic Pairings over Barreto-Naehrig Curves" by A. J. Devegili et al., published in _Proceedings from the 1st International Conference on Pairing-Based Cryptography_, 2007, pp. 197-207.
+  crossScalaVersions := Seq(scalaVersion.value, "2.13.6"),
 
 - "Multiplication and Squaring on Pairing-Friendly Fields" by A. J. Devegili et al., published in 2006 and available at http://eprint.iacr.org/2006/471.
 
@@ -78,41 +79,9 @@ _Guide to Pairing-Based Cryptography_ by N.E. Mrabet and M. Joye, Chapman and Ha
 
 The NCC Group has conducted an audit of this library - we have a blog post about the audit [here](https://blog.ironcorelabs.com/ironcore-labs-proxy-re-encryption-library-audit-by-ncc-group-f67abe666838), and their findings are available in a public report [here](https://www.nccgroup.trust/us/our-research/proxy-re-encryption-protocol-ironcore-public-report/). The NCC Group audit found that the chosen pairing and elliptic curve are cryptographically sound and secure, and that the Scala implementation is a faithful and correct embodiment of the target protocol.
 
-# The Project
-
-## Project structure
-
-The project is currently all inside the `core` target.
-
-```
-└── core                                [main project]
-    ├── js                              [javascript only]
-    │   ├── build                       [NPM build]
-    │   │   ├── package.json
-    │   │   ├── publish.sh
-    │   │   └── recrypt.d.ts
-    │   └── src
-    │       ├── main
-    │       └── test
-    ├── jvm                             [jvm only]
-    │   └── src
-    │       ├── main                    [JVM specific API]
-    │       └── test
-    └── src                             [shared code]
-        └── main
-            └── scala/com/ironcorelabs
-                └── recrypt             [public API for recrypt]
-                    └── internal        [internal concepts/structures]
-```
-
-Good places to start exploring are
-
-- core/js/src - com.ironcorelabs.recrypt.Api (JavaScript API)
-- core/src/main/scala - com.ironcorelabs.recrypt.CoreApi (Scala API)
-
 ## Building
 
-Recrypt requires openjdk8 and sbt 0.13.x and is known to build under Linux and MacOSX.
+Recrypt requires openjdk8+ and is known to build under Linux and MacOSX.
 
 https://github.com/paulp/sbt-extras can be used to get sbt.
 
@@ -125,25 +94,6 @@ $ sbt compile
 ## Running Tests
 
 To run tests just run `sbt test` from the root of the project. This will test everything, but will not run the benchmarks.
-
-## ScalaJS
-
-The `core` project supports ScalaJS. All code at `core/src` is compiled for both JVM and JS. Code in `core/js/src` is JavaScript specific and code in `core/jvm/src` is JVM only.
-
-Since ScalaJS doesn't support Scalatest, all tests only execute on the JVM.
-
-### ScalaJS specific sbt targets
-
-Executable from the root
-
-- `fastOptJS` - creates a human readable .js file. Faster to create, but larger.
-- `fullOptJS` - fully optimized .js file. Much slower to create.
-
-### ScalaJS Javascript API Examples
-
-Examples for Javascript API can be found in `core/js/src/test`.
-For them to work, you need to compile the API (see above) and copy the resulting file from `core/js/target/scala-2.12` into the `core/js/src/test` directory.
-If you use fastOptJS, uncomment the appropriate line in the html files.
 
 ## Benchmarks
 
@@ -162,7 +112,7 @@ libsodium-dev/xenial,now 1.0.8-5 amd64 [installed]
 
 To run the benchmarks, run the following from sbt:
 
-`benchmark/jmh:run -wi 10 -i 15 -f1 -t1 bench.*`
+`benchmark/Jmh/run -wi 10 -i 15 -f1 -t1 bench.*`
 
 The parameters used here are:
 
@@ -172,16 +122,6 @@ The parameters used here are:
 - `-t`: the number of threads to use during benchmarking
 
 The above command will use a single thread warming up 10 times on each and running each test 15 times.
-
-### JavaScript
-
-To setup the JS benchmarks, run the following from `sbt`:
-
-`clean`
-
-`fullOptJS`
-
-This will generate the fully optimized JS build. Then go into the `core/js/src/test` directory and create a local symlink to the build file via `ln -s ../../target/scala-2.12/recrypt-core-opt.js recrypt-core-opt.js`. Then startup a local server in that directory (via Python, `python -m SimpleHTTPServer`) and go to `localhost:8000/benchmark.html` to run the benchmarks in your browser.
 
 # License
 
