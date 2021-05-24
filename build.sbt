@@ -31,13 +31,13 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.2.3" % "test",
-    "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test",
+    "org.scalatest" %%% "scalatest" % "3.2.9" % "test",
+    "org.scalacheck" %%% "scalacheck" % "1.15.4" % "test",
     "org.typelevel" %%% "spire-laws" % "0.17.0" % "test",
-    "org.typelevel" %%% "discipline-scalatest" % "2.1.1" %"test",
+    "org.typelevel" %%% "discipline-scalatest" % "2.1.5" %"test",
     ) ++ Seq( // Core dependencies.
     "org.typelevel" %%% "spire" % "0.17.0",
-    "org.scodec" %%% "scodec-bits" % "1.1.18",
+    "org.scodec" %%% "scodec-bits" % "1.1.27",
     "org.typelevel" %%% "cats-effect" % "2.1.4"
   ),
   //List is from https://tpolecat.github.io/2017/04/25/scalac-flags.html
@@ -92,21 +92,20 @@ lazy val recryptSettings = Seq(
   // HACK: without these lines, the console is basically unusable,
   // since all imports are reported as being unused (and then become
   // fatal errors).
-  scalacOptions in (Compile, console) ~= { _.filterNot(_.startsWith("-Xlint")).filterNot(_.startsWith("-Ywarn")) },
-  scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
+  Compile / console / scalacOptions ~= { _.filterNot(_.startsWith("-Xlint")).filterNot(_.startsWith("-Ywarn")) },
+  Test / console / scalacOptions := (Compile / console / scalacOptions).value,
 
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   isSnapshot := version.value endsWith "SNAPSHOT",
   homepage := Some(url("http://github.com/ironcorelabs/recrypt")),
-  useGpg := true,
   publishTo := Some(
     if (isSnapshot.value)
       Opts.resolver.sonatypeSnapshots
     else
       Opts.resolver.sonatypeStaging),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   scmInfo := Some(ScmInfo(url("https://github.com/ironcorelabs/recrypt"), "git@github.com:ironcorelabs/recrypt.git")),
   pomExtra := (
@@ -125,11 +124,11 @@ lazy val recryptSettings = Seq(
       }
       </developers>
     ),
-  coverageMinimum := 80,
+  coverageMinimumStmtTotal := 80,
   coverageFailOnMinimum := true,
   //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
-  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,
-    testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
+  (Compile / scalastyleSources) ++= (Compile / unmanagedSourceDirectories).value,
+    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
       "com.ironcorelabs" %%% "cats-scalatest" % "3.1.1" % "test"
     ),
