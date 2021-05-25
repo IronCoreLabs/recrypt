@@ -31,14 +31,14 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.2.9" % "test",
-    "org.scalacheck" %%% "scalacheck" % "1.15.4" % "test",
-    "org.typelevel" %%% "spire-laws" % "0.17.0" % "test",
-    "org.typelevel" %%% "discipline-scalatest" % "2.1.5" %"test",
+    "org.scalatest" %% "scalatest" % "3.2.9" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
+    "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
+    "org.typelevel" %% "discipline-scalatest" % "2.1.5" %"test",
     ) ++ Seq( // Core dependencies.
-    "org.typelevel" %%% "spire" % "0.17.0",
-    "org.scodec" %%% "scodec-bits" % "1.1.27",
-    "org.typelevel" %%% "cats-effect" % "2.1.4"
+    "org.typelevel" %% "spire" % "0.17.0",
+    "org.scodec" %% "scodec-bits" % "1.1.27",
+    "org.typelevel" %% "cats-effect" % "2.1.4"
   ),
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -75,7 +75,7 @@ lazy val recryptSettings = Seq(
   (Compile / scalastyleSources) ++= (Compile / unmanagedSourceDirectories).value,
     Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
-      "com.ironcorelabs" %%% "cats-scalatest" % "3.1.1" % "test"
+      "com.ironcorelabs" %% "cats-scalatest" % "3.1.1" % "test"
     ),
   scalacOptions ++= Seq(
     "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
