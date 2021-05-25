@@ -82,7 +82,6 @@ lazy val recryptSettings = Seq(
   ))
 
 
-//Master project which aggregates all the sub projects.
 lazy val recrypt = project
   .in(file("."))
   .settings(moduleName := "recrypt-core")
