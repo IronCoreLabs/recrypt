@@ -3,7 +3,6 @@
 [![CI](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml/badge.svg)](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml)
 [![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt/coverage.svg?branch=main)](https://codecov.io/github/IronCoreLabs/recrypt?branch=main)
 [![scaladoc](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12)
-[![NPM Version](https://badge.fury.io/js/%40ironcorelabs%2Frecryptjs.svg)](https://www.npmjs.com/package/@ironcorelabs/recryptjs)
 
 This is a library that implements a set of cryptographic primitives that are needed for a _multi-hop proxy re-encryption_ scheme.
 
@@ -60,7 +59,6 @@ Our implementation was guided by the following papers:
 - "High-Speed Software Implementation of the Optimal Ate Pairing over Barreto-Naehrig Curves" by J. Beuchat et al., published in _Proceedings from the 4th International Conference on Pairing-Based Cryptography_, 2010, pp. 21-39.
 
 - "Implementing Cryptographic Pairings over Barreto-Naehrig Curves" by A. J. Devegili et al., published in _Proceedings from the 1st International Conference on Pairing-Based Cryptography_, 2007, pp. 197-207.
-  crossScalaVersions := Seq(scalaVersion.value, "2.13.6"),
 
 - "Multiplication and Squaring on Pairing-Friendly Fields" by A. J. Devegili et al., published in 2006 and available at http://eprint.iacr.org/2006/471.
 
