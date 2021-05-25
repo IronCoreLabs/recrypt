@@ -62,7 +62,7 @@ class ApiTest extends TestBase {
         masterToDeviceTransformKey <- api.generateTransformKey(masterPrivate, devicePublic, publicSigningKey, privateSigningKey)
         transformedMessage <- api.transform(encryptedMessage, masterToDeviceTransformKey, publicSigningKey, privateSigningKey)
       } yield plaintext -> api.decrypt(transformedMessage, devicePrivate)
-      val (expectedResult, actualResult) = io.unsafeRunSync
+      val (expectedResult, actualResult) = io.unsafeRunSync()
       actualResult.value shouldBe expectedResult
     }
 
@@ -87,7 +87,7 @@ class ApiTest extends TestBase {
         transformedMessage <- api.transform(encryptedMessage, augmentedTransformKey, publicSigningKey, privateSigningKey)
         //Even though we augmented, this should work on the client per normal.
       } yield plaintext -> api.decrypt(transformedMessage, devicePrivate)
-      val (expectedResult, actualResult) = io.unsafeRunSync
+      val (expectedResult, actualResult) = io.unsafeRunSync()
       actualResult.value shouldBe expectedResult
     }
 
@@ -116,7 +116,7 @@ class ApiTest extends TestBase {
         transformedToUserMessage <- api.transform(encryptedMessage, augmentedGroupToUserTransform, publicSigningKey, privateSigningKey)
         transformedToDeviceMessage <- api.transform(transformedToUserMessage, augmentedUserToDeviceTransform, publicSigningKey, privateSigningKey)
       } yield plaintext -> api.decrypt(transformedToDeviceMessage, devicePrivate)
-      val (expectedResult, actualResult) = io.unsafeRunSync
+      val (expectedResult, actualResult) = io.unsafeRunSync()
       actualResult.value shouldBe expectedResult
     }
 
@@ -136,7 +136,7 @@ class ApiTest extends TestBase {
         transformedToUserMessage <- api.transform(encryptedMessage, groupToUserTransformKey, publicSigningKey, privateSigningKey)
         transformedToDeviceMessage <- api.transform(transformedToUserMessage, userToDeviceTransformKey, publicSigningKey, privateSigningKey)
       } yield plaintext -> api.decrypt(transformedToDeviceMessage, devicePrivate)
-      val (expectedResult, actualResult) = io.unsafeRunSync
+      val (expectedResult, actualResult) = io.unsafeRunSync()
       actualResult.value shouldBe expectedResult
     }
 
@@ -149,7 +149,7 @@ class ApiTest extends TestBase {
         masterToMasterTransformKey <- api.generateTransformKey(masterPrivate, masterPublic, publicSigningKey, privateSigningKey)
         transformedMessage <- api.transform(encryptedMessage, masterToMasterTransformKey, publicSigningKey, privateSigningKey)
       } yield plaintext -> api.decrypt(transformedMessage, masterPrivate)
-      val (expectedResult, actualResult) = io.unsafeRunSync
+      val (expectedResult, actualResult) = io.unsafeRunSync()
       actualResult.value shouldBe expectedResult
     }
   }
@@ -175,7 +175,7 @@ class ApiTest extends TestBase {
         masterPublic <- clientPublic.augment(serverPublic).toIO
         signature <- api.schnorrSign(masterPrivate, masterPublic, message)
       } yield api.schnorrVerify(masterPublic, serverPrivate, message, signature)
-      io.unsafeRunSync shouldBe true
+      io.unsafeRunSync() shouldBe true
     }
     "fail a bad signature" in {
       val io = for {
@@ -186,7 +186,7 @@ class ApiTest extends TestBase {
         masterPublic <- clientPublic.augment(serverPublic).toIO
         signature <- api.schnorrSign(masterPrivate, masterPublic, message)
       } yield api.schnorrVerify(masterPublic, serverPrivate, hex"deadfeeb", signature)
-      io.unsafeRunSync shouldBe false
+      io.unsafeRunSync() shouldBe false
     }
   }
 
@@ -236,7 +236,7 @@ class ApiTest extends TestBase {
   "generateGTElem" should {
     "always produce an rth root" in {
       1.to(100).foreach { _ =>
-        val gTElem = api.generateGTElem.unsafeRunSync
+        val gTElem = api.generateGTElem.unsafeRunSync()
         val rthPow = gTElem ^ internal.Fp.Order
         rthPow shouldBe Field[internal.FP12Elem[internal.Fp]].one
       }
@@ -247,7 +247,7 @@ class ApiTest extends TestBase {
     val fp12One = Field[internal.FP12Elem[internal.Fp]].one
     "always produce an rth root" in {
       1.to(20).foreach { _ =>
-        val plaintext = api.generatePlaintext.unsafeRunSync
+        val plaintext = api.generatePlaintext.unsafeRunSync()
         val fp12 = CoreApi.plaintextTransform(plaintext).getOrElse(fp12One)
         val rthPow = fp12 ^ internal.Fp.Order
         rthPow shouldBe fp12One

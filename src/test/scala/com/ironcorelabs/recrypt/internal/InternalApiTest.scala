@@ -208,7 +208,7 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
   "encrypt" should {
     val privateKey = PrivateKey(Fp(BigInt("-22")))
     val ephemeralSecretKey = BigInt("42")
-    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync)
+    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync())
     val publicKey = keyGen(privateKey)
     val encryptResult = encryptInstance.encrypt(publicKey, plaintext, PrivateKey.fromBigInt(ephemeralSecretKey), publicSigningKey, privateSigningKey)
     "round trip known good text" in {
@@ -249,7 +249,7 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
 
     val privateKey = PrivateKey(Fp(BigInt("-8888888888888888888888888888888888")))
     val ephemeralSecretKey = BigInt("3222222232323")
-    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync)
+    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync())
     val publicKey = keyGen(privateKey)
     val encryptResult = encryptInstance.encrypt(publicKey, plaintext, PrivateKey.fromBigInt(ephemeralSecretKey), publicSigningKey, privateSigningKey)
     "fail when verify fails" in {
@@ -272,15 +272,15 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
   }
 
   "reencrypt" should {
-    val salt = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync)
+    val salt = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync())
     val reencryptionPrivate = PrivateKey.fromBigInt(BigInt("22002131259228303741090495322318969764532178674829148099822698556219881568451"))
     val ephemeralPrivateKey = PrivateKey.fromBigInt(BigInt("24550233719269254106556478663938123459765238883583743938937070753673053032673"))
     val privateKey = PrivateKey.fromBigInt(BigInt("43966559432365357341903140497410248873099149633601160471165130153973144042658"))
     val publicKey = keyGen(privateKey)
-    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync)
+    val plaintext = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync())
     val encryptResult = encryptInstance.encrypt(publicKey, plaintext, ephemeralPrivateKey, publicSigningKey, privateSigningKey)
     val raRePrivateKey = PrivateKey.fromBigInt(BigInt("17561965855055966875289582496525889116201409974621952158489640859240156546764"))
-    val raReK = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync)
+    val raReK = encryptInstance.generateRthRoot(randomFP12IO.unsafeRunSync())
     val reencryptionKey = encryptInstance.generateReencryptionKey(privateKey, publicKey, reencryptionPrivate, salt, PublicSigningKey.empty, PrivateSigningKey.empty)
     "match known value" in {
       val reencryptedValueOrError = encryptInstance.reencrypt(reencryptionKey, encryptResult, raRePrivateKey, raReK, publicSigningKey, privateSigningKey)

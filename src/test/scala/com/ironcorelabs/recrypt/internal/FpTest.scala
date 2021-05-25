@@ -18,7 +18,6 @@
 package com.ironcorelabs.recrypt.internal
 
 import Fp.implicits._
-import Arbitraries.fpGen
 import org.scalacheck.Arbitrary
 import spire.implicits._
 import scodec.bits.BitVector

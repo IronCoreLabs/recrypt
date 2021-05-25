@@ -18,7 +18,6 @@
 package com.ironcorelabs.recrypt.internal
 
 import point.HomogeneousPoint
-import spire.algebra.Field
 
 /**
  * This type holds all the points that are used in our core algorithm for for `FpType`.
@@ -27,7 +26,7 @@ import spire.algebra.Field
  * hashElement is another point in Fp2 that is used for hashing.
  * generator is the generator point over FpType.
  */
-final case class CurvePoints[FpType <: BigInt: ExtensionField: Field: ModsByPrime](
+final case class CurvePoints[FpType <: BigInt](
   g1: HomogeneousPoint[FP2Elem[FpType]],
   hashElement: HomogeneousPoint[FP2Elem[FpType]],
   generator: HomogeneousPoint[FpType]) {

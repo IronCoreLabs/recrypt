@@ -97,7 +97,7 @@ object FP2Elem { //scalastyle:ignore
     }
 
   implicit def eq[A <: BigInt: Eq]: Eq[FP2Elem[A]] = Eq.instance {
-    case (FP2Elem(x, y), FP2Elem(x2, y2)) => x2 == x && y2 == y
+    case (FP2Elem(x, y), FP2Elem(x2, y2)) => x2.eqv(x) && y2.eqv(y)
   }
 
   implicit def hashable[A <: BigInt: Hashable]: Hashable[FP2Elem[A]] = Hashable[(A, A)].contramap { case FP2Elem(elem1, elem2) => (elem1, elem2) }

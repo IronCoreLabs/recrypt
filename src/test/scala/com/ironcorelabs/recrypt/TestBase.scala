@@ -19,7 +19,6 @@ package com.ironcorelabs.recrypt
 
 import org.scalatest.{ BeforeAndAfterAll, OptionValues }
 import cats.scalatest.EitherValues
-import org.scalacheck.{ Prop, Properties }
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -31,9 +30,4 @@ abstract class TestBase
   with BeforeAndAfterAll
   with ScalaCheckDrivenPropertyChecks
   with EitherValues {
-  //scalacheck dropped properties inheriting Prop in 1.13.
-  //see https://github.com/rickynils/scalacheck/issues/254
-  def propertiesToProp(properties: Properties) = Prop.all(properties.properties.map(_._2): _*)
-  implicit def untypedNoShrink[A] = org.scalacheck.Shrink[A] { _ => Stream.empty }
-
 }

@@ -26,13 +26,13 @@ object Arbitraries {
   val fp480Gen = Arbitrary.arbitrary[BigInt].map(Fp480(_))
   implicit val nonZeroFpGen = Arbitrary.arbitrary[BigInt].filter(_ != BigInt(0)).map(Fp(_))
   implicit val nonZeroFp480Gen = Arbitrary.arbitrary[BigInt].filter(_ != BigInt(0)).map(Fp480(_))
-  implicit def fp2Gen[A <: BigInt: Field: ModsByPrime](implicit genA: Gen[A]) = for {
+  implicit def fp2Gen[A <: BigInt: ModsByPrime](implicit genA: Gen[A]) = for {
     a <- genA
     b <- genA
   } yield FP2Elem(a, b)
-  implicit def fp2Arb[A <: BigInt: Field: ModsByPrime: Gen] = Arbitrary(fp2Gen[A])
+  implicit def fp2Arb[A <: BigInt: ModsByPrime: Gen] = Arbitrary(fp2Gen[A])
 
-  implicit def fp6Gen[A <: BigInt: Field: ModsByPrime: ExtensionField](implicit genFp2A: Gen[FP2Elem[A]]) = for {
+  implicit def fp6Gen[A <: BigInt: ModsByPrime](implicit genFp2A: Gen[FP2Elem[A]]) = for {
     one <- genFp2A
     two <- genFp2A
     three <- genFp2A

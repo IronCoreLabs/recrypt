@@ -23,14 +23,14 @@ class GenerateFp12ElemBenchmark extends BenchmarkHelper {
 
   @Setup
   def setup(): Unit = {
-    fp12s = List.fill(size)(randomFp12IO).sequence.unsafeRunSync
+    fp12s = List.fill(size)(randomFp12IO).sequence.unsafeRunSync()
   }
 
   @Benchmark
   def generateUsingFinalExp() = fp12s.foreach(pairing.finalExponentiation(_))
 
   @Benchmark
-  def generateUsingFinalExpIncludingIO() = fp12s.foreach(_ => randomFp12IO.map(pairing.finalExponentiation(_)).unsafeRunSync)
+  def generateUsingFinalExpIncludingIO() = fp12s.foreach(_ => randomFp12IO.map(pairing.finalExponentiation(_)).unsafeRunSync())
 
   @Benchmark
   def generateUsingRaising() = fp12s.foreach(fp12 => generateFp12(fp12.elem1.elem1.elem1))
