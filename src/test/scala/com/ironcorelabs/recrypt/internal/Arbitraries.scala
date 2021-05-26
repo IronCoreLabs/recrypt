@@ -22,10 +22,34 @@ import org.scalacheck.{ Arbitrary, Gen }
 import spire.algebra.Field
 
 object Arbitraries {
+  ///This is the scalacheck generator, but with no 0s.
+  val nonZeroBigInt: Gen[BigInt] = {
+    val long: Gen[Long] =
+      Gen.choose(Long.MinValue, Long.MaxValue).map(x => if (x == 0) 1L else x)
+
+    val gen1: Gen[BigInt] = for { x <- long } yield BigInt(x)
+    val gen2: Gen[BigInt] = for { x <- gen1; y <- long } yield x * y
+    val gen3: Gen[BigInt] = for { x <- gen2; y <- long } yield x * y
+    val gen4: Gen[BigInt] = for { x <- gen3; y <- long } yield x * y
+
+    val gen0: Gen[BigInt] =
+      Gen.oneOf(
+        BigInt(1),
+        BigInt(-1),
+        BigInt(Int.MaxValue) + 1,
+        BigInt(Int.MinValue) - 1,
+        BigInt(Long.MaxValue),
+        BigInt(Long.MinValue),
+        BigInt(Long.MaxValue) + 1,
+        BigInt(Long.MinValue) - 1)
+
+    Gen.frequency((5, gen0), (5, gen1), (4, gen2), (3, gen3), (2, gen4))
+  }
+
   val fpGen = Arbitrary.arbitrary[BigInt].map(Fp(_))
   val fp480Gen = Arbitrary.arbitrary[BigInt].map(Fp480(_))
-  implicit val nonZeroFpGen = Arbitrary.arbitrary[BigInt].filter(_ != BigInt(0)).map(Fp(_))
-  implicit val nonZeroFp480Gen = Arbitrary.arbitrary[BigInt].filter(_ != BigInt(0)).map(Fp480(_))
+  implicit val nonZeroFpGen = nonZeroBigInt.map(Fp(_))
+  implicit val nonZeroFp480Gen = nonZeroBigInt.map(Fp480(_))
   implicit def fp2Gen[A <: BigInt: ModsByPrime](implicit genA: Gen[A]) = for {
     a <- genA
     b <- genA
