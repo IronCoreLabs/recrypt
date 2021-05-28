@@ -19,7 +19,7 @@ class HomogeneousPointBenchmark extends BenchmarkHelper {
 
   @Setup
   def setup(): Unit = {
-    points = Vector.fill(size)(randomFp.map(point.times)).sequence.unsafeRunSync
+    points = Vector.fill(size)(randomFp.map(point.times)).sequence.unsafeRunSync()
   }
 
   @Benchmark

@@ -38,23 +38,23 @@ class ApiBenchmark extends BenchmarkHelper {
 
   @Setup
   def setup(): Unit = {
-    val keyPair = api.generateKeyPair.unsafeRunSync
+    val keyPair = api.generateKeyPair.unsafeRunSync()
     privateKey = keyPair._1
     publicKey = keyPair._2
-    plaintext = api.generatePlaintext.unsafeRunSync
-    val signingKeyPair = randomBytesIO.map(Ed25519.generateKeyPair).unsafeRunSync
+    plaintext = api.generatePlaintext.unsafeRunSync()
+    val signingKeyPair = randomBytesIO.map(Ed25519.generateKeyPair).unsafeRunSync()
     publicSigningKey = recrypt.PublicSigningKey(signingKeyPair._1.bytes)
     privateSigningKey = recrypt.PrivateSigningKey(signingKeyPair._2.bytes)
-    encryptedMessage = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync
-    transformKey = api.generateTransformKey(privateKey, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync
+    encryptedMessage = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
+    transformKey = api.generateTransformKey(privateKey, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
   }
 
   @Benchmark
-  def encrypt() = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync
+  def encrypt() = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
 
   @Benchmark
-  def transform() = api.transform(encryptedMessage, transformKey, publicSigningKey, privateSigningKey).unsafeRunSync
+  def transform() = api.transform(encryptedMessage, transformKey, publicSigningKey, privateSigningKey).unsafeRunSync()
 
   @Benchmark
-  def computePublicKey() = api.computePublicKey(privateKey).unsafeRunSync
+  def computePublicKey() = api.computePublicKey(privateKey).unsafeRunSync()
 }

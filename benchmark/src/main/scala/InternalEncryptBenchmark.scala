@@ -22,14 +22,14 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
 
   private val publicSigningKey = PublicSigningKey(ByteVector.empty)
   private val privateSigningKey = PrivateSigningKey(ByteVector.empty)
-  private val plaintext = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync)
+  private val plaintext = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync())
   private val publicKey = keyGen(privateKey)
   private val emphemPrivateKey = PrivateKey.fromBigInt(BigInt("7982134798234178911111"))
   private val encryptedData = encryptInstance.encrypt(publicKey, plaintext, emphemPrivateKey, publicSigningKey, privateSigningKey)
-  private val salt1 = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync)
+  private val salt1 = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync())
   private val reencryptionPrivate = PrivateKey.fromBigInt(BigInt("22002131259228303741090495322318969764532178674829148099822698556219881568451"))
   private val raRePrivateKey = PrivateKey.fromBigInt(BigInt("17561965855055966875289582496525889116201409974621952158489640859240156546764"))
-  private val raReK = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync)
+  private val raReK = encryptInstance.generateRthRoot(randomFp12IO.unsafeRunSync())
   private val reencryptionKey = encryptInstance.generateReencryptionKey(
     privateKey,
     publicKey,
@@ -39,7 +39,7 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
     privateSigningKey
   )
   private val reencryptedValue = encryptInstance.reencrypt(reencryptionKey, encryptedData,
-    raRePrivateKey, raReK, publicSigningKey, privateSigningKey).right.toOption.get
+    raRePrivateKey, raReK, publicSigningKey, privateSigningKey).toOption.get
 
   @Benchmark
   def generatePublicKey = keyGen(privateKey)
