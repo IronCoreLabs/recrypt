@@ -1,6 +1,6 @@
 addSbtPlugin("org.scalastyle"    %% "scalastyle-sbt-plugin"    % "1.0.0")
 addSbtPlugin("org.scalariform"    % "sbt-scalariform"          % "1.8.3")
-addSbtPlugin("org.scoverage"      % "sbt-scoverage"            % "1.9.1")
+addSbtPlugin("org.scoverage"      % "sbt-scoverage"            % "1.9.2")
 addSbtPlugin("pl.project13.scala" % "sbt-jmh"                  % "0.4.3")
 addSbtPlugin("com.github.sbt"     % "sbt-release"              % "1.1.0")
 addSbtPlugin("de.heikoseeberger"  % "sbt-header"               % "5.6.0")
