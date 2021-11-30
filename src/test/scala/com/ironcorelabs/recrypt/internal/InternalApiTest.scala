@@ -17,6 +17,7 @@
 
 package com.ironcorelabs.recrypt.internal
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import cats.instances.list._
 import cats.syntax.traverse._
 import com.ironcorelabs.recrypt.internal.Arbitraries._

@@ -20,7 +20,6 @@ package com.ironcorelabs.recrypt
 import cats.effect.IO
 import scodec.bits.ByteVector
 import cats.syntax.either._
-import cats.syntax.monad._
 import cats.syntax.traverse._
 import cats.instances.either._
 import cats.instances.list._
