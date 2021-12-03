@@ -121,6 +121,16 @@ The parameters used here are:
 
 The above command will use a single thread warming up 10 times on each and running each test 15 times.
 
+# Intellectual Property
+
+Recrypt-rust incorporates technology that is protected by the following patents (additional patents may be pending in the U.S. and elsewhere):
+
+- US 10,659,222 - Orthogonal Access Control for Groups via Multi-Hop Transform Encryption
+- US 11,146,391 - Orthogonal Access Control for Groups via Multi-Hop Transform Encryption
+- WO2018201062A1 - Orthogonal Access Control for Groups via Multi-Hop Transform Encryption
+- EP3616384A4 - Orthogonal Access Control for Groups via Multi-Hop Transform Encryption
+- KR20200027921 A - Orthogonal Access Control for Groups via Multi-Hop Transform Encryption
+
 # License
 
 Recrypt is licensed under the [GNU Affero General Public License](LICENSE).
