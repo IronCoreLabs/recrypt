@@ -37,8 +37,8 @@ lazy val recryptSettings = Seq(
     "org.typelevel" %% "discipline-scalatest" % "2.1.5" %"test",
     ) ++ Seq( // Core dependencies.
     "org.typelevel" %% "spire" % "0.17.0",
-    "org.scodec" %% "scodec-bits" % "1.1.29",
-    "org.typelevel" %% "cats-effect" % "3.3.0"
+    "org.scodec" %% "scodec-bits" % "1.1.30",
+    "org.typelevel" %% "cats-effect" % "3.3.0",
   ),
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
