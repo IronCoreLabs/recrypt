@@ -8,7 +8,7 @@ lazy val noPublish = Seq(
 lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
   licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
-  scalaVersion := "2.13.7",
+  scalaVersion := "2.13.8",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.15"),
   headerLicense := Some(HeaderLicense.Custom(
     """|Copyright (C) 2017-present  IronCore Labs
@@ -31,14 +31,14 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.10" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.11" % "test",
     "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
     "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
     "org.typelevel" %% "discipline-scalatest" % "2.1.5" %"test",
     ) ++ Seq( // Core dependencies.
     "org.typelevel" %% "spire" % "0.17.0",
     "org.scodec" %% "scodec-bits" % "1.1.30",
-    "org.typelevel" %% "cats-effect" % "3.3.3",
+    "org.typelevel" %% "cats-effect" % "3.3.5",
   ),
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
