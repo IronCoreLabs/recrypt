@@ -8,7 +8,7 @@ lazy val noPublish = Seq(
 lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
   licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
-  scalaVersion := "2.13.8",
+  scalaVersion := "2.13.10",
   crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
   headerLicense := Some(HeaderLicense.Custom(
     """|Copyright (C) 2017-present  IronCore Labs
