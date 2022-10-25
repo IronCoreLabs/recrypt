@@ -9,7 +9,7 @@ lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
   licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
   scalaVersion := "2.13.8",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.16"),
+  crossScalaVersions := Seq(scalaVersion.value, "2.12.17"),
   headerLicense := Some(HeaderLicense.Custom(
     """|Copyright (C) 2017-present  IronCore Labs
        |
@@ -32,7 +32,7 @@ lazy val recryptSettings = Seq(
   // Test
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.14" % "test",
-    "org.scalacheck" %% "scalacheck" % "1.16.0" % "test",
+    "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
     "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
     "org.typelevel" %% "discipline-scalatest" % "2.2.0" %"test",
     ) ++ Seq( // Core dependencies.
