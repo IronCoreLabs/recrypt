@@ -31,7 +31,7 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.14" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.15" % "test",
     "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
     "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
     "org.typelevel" %% "discipline-scalatest" % "2.2.0" %"test",
