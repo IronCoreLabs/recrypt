@@ -5,7 +5,7 @@ addSbtPlugin("pl.project13.scala"        % "sbt-jmh"               % "0.4.4")
 addSbtPlugin("com.github.sbt"            % "sbt-release"           % "1.1.0")
 addSbtPlugin("com.github.sbt"            % "sbt-pgp"               % "2.2.1")
 addSbtPlugin("de.heikoseeberger"         % "sbt-header"            % "5.9.0")
-addSbtPlugin("org.xerial.sbt"            % "sbt-sonatype"          % "3.9.19")
+addSbtPlugin("org.xerial.sbt"            % "sbt-sonatype"          % "3.9.21")
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"          % "0.4.1")
 
 // workaround for conflict between sbt-scoverage and scalastyle-sbt-plugin
