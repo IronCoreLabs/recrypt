@@ -29,7 +29,7 @@ import com.ironcorelabs.recrypt.syntax.hashable._
 final case class AuthHash(bytes: ByteVector)
 
 object AuthHash {
-  implicit val hashable = Hashable.by[AuthHash](_.bytes)
+  implicit val hashable: Hashable[AuthHash] = Hashable.by[AuthHash](_.bytes)
   def create[A <: BigInt: Hashable](sha256: Sha256Hash, ephemeralPublicKey: PublicKey[A], plaintext: FP12Elem[A]): AuthHash =
     AuthHash(sha256((ephemeralPublicKey, plaintext)))
 }
