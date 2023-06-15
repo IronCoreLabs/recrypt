@@ -48,38 +48,38 @@ object Arbitraries {
 
   val fpGen = Arbitrary.arbitrary[BigInt].map(Fp(_))
   val fp480Gen = Arbitrary.arbitrary[BigInt].map(Fp480(_))
-  implicit val nonZeroFpGen = nonZeroBigInt.map(Fp(_))
-  implicit val nonZeroFp480Gen = nonZeroBigInt.map(Fp480(_))
-  implicit def fp2Gen[A <: BigInt: ModsByPrime](implicit genA: Gen[A]) = for {
+  implicit val nonZeroFpGen: Gen[Fp.Impl.T] = nonZeroBigInt.map(Fp(_))
+  implicit val nonZeroFp480Gen: Gen[Fp480.Impl.T] = nonZeroBigInt.map(Fp480(_))
+  implicit def fp2Gen[A <: BigInt: ModsByPrime](implicit genA: Gen[A]): Gen[FP2Elem[A]] = for {
     a <- genA
     b <- genA
   } yield FP2Elem(a, b)
-  implicit def fp2Arb[A <: BigInt: ModsByPrime: Gen] = Arbitrary(fp2Gen[A])
+  implicit def fp2Arb[A <: BigInt: ModsByPrime: Gen]: Arbitrary[FP2Elem[A]] = Arbitrary(fp2Gen[A])
 
-  implicit def fp6Gen[A <: BigInt: ModsByPrime](implicit genFp2A: Gen[FP2Elem[A]]) = for {
+  implicit def fp6Gen[A <: BigInt: ModsByPrime](implicit genFp2A: Gen[FP2Elem[A]]): Gen[FP6Elem[A]] = for {
     one <- genFp2A
     two <- genFp2A
     three <- genFp2A
   } yield FP6Elem(one, two, three)
 
-  implicit def fp12Arb[A <: BigInt: Field: ModsByPrime: ExtensionField](implicit genFp6A: Gen[FP6Elem[A]]) = Arbitrary(for {
+  implicit def fp12Arb[A <: BigInt: Field: ModsByPrime: ExtensionField](implicit genFp6A: Gen[FP6Elem[A]]): Arbitrary[FP12Elem[A]] = Arbitrary(for {
     one <- genFp6A
     two <- genFp6A
   } yield FP12Elem(one, two))
 
   //Legal Points are ones that satisfy the equation y^2 = x^3 + 3.
   //Generate them by just multiplying the generator point.
-  implicit val homogeneousPointArbFp = Arbitrary[HomogeneousPoint[Fp]](nonZeroFpGen.map(Fp.curvePoints.generator.times(_)))
-  implicit val homogeneousPointArbFp480 = Arbitrary[HomogeneousPoint[Fp480]](nonZeroFp480Gen.map(Fp480.curvePoints.generator.times(_)))
+  implicit val homogeneousPointArbFp: Arbitrary[HomogeneousPoint[Fp]] = Arbitrary[HomogeneousPoint[Fp]](nonZeroFpGen.map(Fp.curvePoints.generator.times(_)))
+  implicit val homogeneousPointArbFp480: Arbitrary[HomogeneousPoint[Fp480]] = Arbitrary[HomogeneousPoint[Fp480]](nonZeroFp480Gen.map(Fp480.curvePoints.generator.times(_)))
 
-  implicit val homogeneousPointArb = Arbitrary[HomogeneousPoint[FP2Elem[Fp]]](fpGen.map(Fp.curvePoints.g1.times(_)))
-  implicit val homogeneousPointArbFP2Elem480 = Arbitrary[HomogeneousPoint[FP2Elem[Fp480]]](fp480Gen.map(Fp480.curvePoints.g1.times(_)))
+  implicit val homogeneousPointArb: Arbitrary[HomogeneousPoint[FP2Elem[Fp]]] = Arbitrary[HomogeneousPoint[FP2Elem[Fp]]](fpGen.map(Fp.curvePoints.g1.times(_)))
+  implicit val homogeneousPointArbFP2Elem480: Arbitrary[HomogeneousPoint[FP2Elem[Fp480]]] = Arbitrary[HomogeneousPoint[FP2Elem[Fp480]]](fp480Gen.map(Fp480.curvePoints.g1.times(_)))
 
-  implicit val arbPrivateKey = Arbitrary[PrivateKey[Fp]](nonZeroFpGen.map(PrivateKey(_)))
+  implicit val arbPrivateKey: Arbitrary[PrivateKey[Fp]] = Arbitrary[PrivateKey[Fp]](nonZeroFpGen.map(PrivateKey(_)))
 
   implicit val arbPublicKey: Arbitrary[PublicKey[Fp]] = Arbitrary(Arbitrary.arbitrary[HomogeneousPoint[Fp]].map(PublicKey(_)))
 
-  implicit val arbPrivateKey480 = Arbitrary[PrivateKey[Fp480]](nonZeroFp480Gen.map(PrivateKey(_)))
+  implicit val arbPrivateKey480: Arbitrary[PrivateKey[Fp480]] = Arbitrary[PrivateKey[Fp480]](nonZeroFp480Gen.map(PrivateKey(_)))
 
   implicit val arbPublicKey480: Arbitrary[PublicKey[Fp480]] = Arbitrary(Arbitrary.arbitrary[HomogeneousPoint[Fp480]].map(PublicKey(_)))
 }

@@ -40,8 +40,8 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
   val publicSigningKey = PublicSigningKey.empty
   val sha256Hash = Sha256Hash(com.ironcorelabs.recrypt.Sha256)
   //All Fps in this file should be non-zero.
-  implicit val fpArb = Arbitrary(nonZeroFpGen)
-  implicit val fp480Arb = Arbitrary(nonZeroFp480Gen)
+  implicit val fpArb: Arbitrary[Fp] = Arbitrary(nonZeroFpGen)
+  implicit val fp480Arb: Arbitrary[Fp480] = Arbitrary(nonZeroFp480Gen)
 
   private val randomBytesIO: IO[ByteVector] = {
     //Start with a known value, we'll just add one to it each time

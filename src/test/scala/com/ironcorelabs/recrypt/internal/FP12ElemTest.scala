@@ -25,7 +25,7 @@ import com.ironcorelabs.recrypt.syntax.hashable._
 
 class FP12ElemTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
-  implicit override val generatorDrivenConfig = PropertyCheckConfiguration(minSuccessful = 20)
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 20)
   val fp12Zero = Field[FP12Elem[Fp]].zero
   val fp12One = Field[FP12Elem[Fp]].one
 
