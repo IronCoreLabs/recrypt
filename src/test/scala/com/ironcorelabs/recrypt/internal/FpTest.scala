@@ -25,7 +25,7 @@ import scodec.bits.BitVector
 class FpTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
   //Things in here are fundemental operations so tehy should work even for 0
-  implicit val fpArb = Arbitrary(fpGen)
+  implicit val fpArb: Arbitrary[Fp] = Arbitrary(fpGen)
 
   "Fp.apply" should {
     "yield expected result" in {

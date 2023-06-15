@@ -30,11 +30,11 @@ class FieldLawTests extends AnyFunSuite with org.scalatest.prop.Configuration wi
   import Arbitraries._
   //Additive laws permit all elements.
   implicit def pred[A]: Predicate[A] = Predicate.const(true)
-  implicit def fp6Arb = Arbitrary(fp6Gen[Fp])
-  implicit val fp480Arb = Arbitrary(nonZeroFp480Gen)
-  implicit val fpArb = Arbitrary(nonZeroFpGen)
+  implicit def fp6Arb: Arbitrary[FP6Elem[Fp]] = Arbitrary(fp6Gen[Fp])
+  implicit val fp480Arb: Arbitrary[Fp480] = Arbitrary(nonZeroFp480Gen)
+  implicit val fpArb: Arbitrary[Fp] = Arbitrary(nonZeroFpGen)
 
-  implicit def fp6Arb480 = Arbitrary(fp6Gen[Fp480])
+  implicit def fp6Arb480: Arbitrary[FP6Elem[Fp480]] = Arbitrary(fp6Gen[Fp480])
   checkAll("Fp256", RingLaws[Fp].field)
   checkAll("FP2Elem256", RingLaws[FP2Elem[Fp]].field)
   checkAll("FP6Elem256", RingLaws[FP6Elem[Fp]].field)

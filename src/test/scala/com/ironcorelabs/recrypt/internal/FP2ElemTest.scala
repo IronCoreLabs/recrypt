@@ -23,7 +23,7 @@ import com.ironcorelabs.recrypt.syntax.hashable._
 
 class FP2ElemTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
-  implicit val fp480Arb = org.scalacheck.Arbitrary(nonZeroFp480Gen)
+  implicit val fp480Arb: org.scalacheck.Arbitrary[Fp480.Impl.T] = org.scalacheck.Arbitrary(nonZeroFp480Gen)
 
   val fp2Zero = Field[FP2Elem[Fp]].zero
   val fp2One = Field[FP2Elem[Fp]].one

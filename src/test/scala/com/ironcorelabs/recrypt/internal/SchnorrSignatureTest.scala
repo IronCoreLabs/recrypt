@@ -22,7 +22,7 @@ import scodec.bits._
 class SchnorrSignatureTest extends com.ironcorelabs.recrypt.TestBase {
 
   //We don't support this in general because we lose type safety. For tests we'll just allow it.
-  implicit val hashableByteVector = Hashable.by[ByteVector](identity)
+  implicit val hashableByteVector: Hashable[ByteVector] = Hashable.by[ByteVector](identity)
   "SchnorrSignature for Fp" should {
     import Fp.implicits._
     val keyGen = new PublicKeyGen(Fp.curvePoints.generator)

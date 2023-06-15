@@ -163,7 +163,7 @@ object FP6Elem {
    * (Note that this is recursive, since the coefficients are each FP2 elements, which
    * in turn consist of two coefficients.)
    */
-  implicit def byteDecoderFP6Elem[A <: BigInt: ModsByPrime](implicit readFp2A: BytesDecoder[FP2Elem[A]]) =
+  implicit def byteDecoderFP6Elem[A <: BigInt: ModsByPrime](implicit readFp2A: BytesDecoder[FP2Elem[A]]): BytesDecoder[FP6Elem[A]] =
     BytesDecoder.forSize(readFp2A.acceptableSize * 3) { b =>
       val thirdLength = b.length / 3
       val (firstThird, twoThirds) = b.splitAt(thirdLength)
