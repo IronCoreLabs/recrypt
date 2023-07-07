@@ -74,6 +74,7 @@ lazy val recryptSettings = Seq(
   //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
   (Compile / scalastyleSources) ++= (Compile / unmanagedSourceDirectories).value,
     Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
+  Test / tpolecatExcludeOptions += ScalacOptions.warnNonUnitStatement,
   libraryDependencies ++= Seq(
       "com.ironcorelabs" %% "cats-scalatest" % "3.1.1" % "test"
     ),

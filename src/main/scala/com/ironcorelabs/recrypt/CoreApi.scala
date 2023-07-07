@@ -308,7 +308,6 @@ object CoreApi {
   }
 
   private[recrypt] def transformedValueTransform(t: TransformedValue): Either[String, internal.SignedValue[internal.EncryptedValue[internal.Fp]]] = {
-    BytesDecoder[internal.Fp]
     for {
       fp12 <- BytesDecoder[internal.FP12Elem[internal.Fp]].decode(t.encryptedMessage.bytes).leftMap(_ => "Payload of 'encryptedMessage' could not be converted")
       ephemeralPublicKey = publicKeyTransform(t.ephemeralPublicKey)
