@@ -31,3 +31,4 @@ tmp
 .bsp
 .vscode
 project/metals.sbt
+.direnv
