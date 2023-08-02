@@ -1,4 +1,5 @@
 import scalariform.formatter.preferences._
+import org.typelevel.scalacoptions.ScalacOptions
 
 lazy val noPublish = Seq(
   publish := {},
