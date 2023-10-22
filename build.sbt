@@ -38,7 +38,7 @@ lazy val recryptSettings = Seq(
     "org.typelevel" %% "discipline-scalatest" % "2.2.0" %"test",
     ) ++ Seq( // Core dependencies.
     "org.typelevel" %% "spire" % "0.17.0",
-    "org.scodec" %% "scodec-bits" % "1.1.37",
+    "org.scodec" %% "scodec-bits" % "1.1.38",
     "org.typelevel" %% "cats-effect" % "3.5.2",
   ),
   //Release configuration
