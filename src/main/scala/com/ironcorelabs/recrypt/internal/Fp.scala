@@ -129,7 +129,7 @@ final object Fp {
   final object implicits { // scalastyle:ignore object.name
     implicit val hashableFp: Hashable[Fp.Impl.T] = Hashable.by(bigIntToByteVector)
     implicit val fpEq: Eq[Fp.Impl.T] = Eq.fromUniversalEquals
-    implicit val fieldForFp: Field[Fp.Impl.T] = new Field.WithDefaultGCD[Fp] {
+    implicit val fieldForFp: Field[Fp.Impl.T] = new Field[Fp] {
       //These casts are safe because they shouldn't ever produce something that is
       //not in Fp. This is demonstrated in unit tests, but not statically.
       def negate(x: Fp): Fp = if (x == Fp.Zero) Fp.Zero else (Fp.Prime - x).asInstanceOf[Fp]

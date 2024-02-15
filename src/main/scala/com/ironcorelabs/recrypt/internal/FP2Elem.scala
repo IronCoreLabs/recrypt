@@ -85,7 +85,7 @@ object FP2Elem { //scalastyle:ignore
 
   def fromBigInts[A <: BigInt](elem1: BigInt, elem2: BigInt)(implicit mods: ModsByPrime[A]): FP2Elem[A] = FP2Elem(mods.create(elem1), mods.create(elem2))
   implicit final def fieldInstance[A <: BigInt](implicit fieldA: Field[A], modsByPrime: ModsByPrime[A]): Field[FP2Elem[A]] =
-    new Field.WithDefaultGCD[FP2Elem[A]] {
+    new Field[FP2Elem[A]] {
 
       def negate(x: FP2Elem[A]): FP2Elem[A] = -x
       def zero: FP2Elem[A] = FP2Elem(fieldA.zero, fieldA.zero)

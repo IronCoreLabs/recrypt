@@ -132,7 +132,7 @@ object FP6Elem {
   def create[A <: BigInt: ModsByPrime](a: A, b: A, a2: A, b2: A, a3: A, b3: A): FP6Elem[A] =
     FP6Elem[A](FP2Elem[A](a, b), FP2Elem[A](a2, b2), FP2Elem[A](a3, b3))
 
-  implicit def field[A <: BigInt: Field: ExtensionField: ModsByPrime]: Field[FP6Elem[A]] = new Field.WithDefaultGCD[FP6Elem[A]] {
+  implicit def field[A <: BigInt: Field: ExtensionField: ModsByPrime]: Field[FP6Elem[A]] = new Field[FP6Elem[A]] {
     def negate(x: FP6Elem[A]): FP6Elem[A] = -x
     val zero: FP6Elem[A] = {
       val fp2Zero = Field[FP2Elem[A]].zero

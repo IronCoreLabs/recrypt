@@ -126,7 +126,7 @@ final object Fp480 {
   //Object which contains the implicits for Fp480.
   final object implicits { // scalastyle:ignore object.name
     implicit val fp480Eq: Eq[Fp480.Impl.T] = Eq.fromUniversalEquals
-    implicit val fieldForFp480: Field[Fp480.Impl.T] = new Field.WithDefaultGCD[Fp480] {
+    implicit val fieldForFp480: Field[Fp480.Impl.T] = new Field[Fp480] {
       //These casts are safe because they shouldn't ever produce something that is
       //not in Fp480. This is demonstrated in unit tests, but not statically.
       def negate(x: Fp480): Fp480 = if (x == Fp480.Zero) Fp480.Zero else (Fp480.Prime - x).asInstanceOf[Fp480]

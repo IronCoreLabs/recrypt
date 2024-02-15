@@ -136,7 +136,7 @@ object FP12Elem {
     FP6Elem.create[A](fp7, fp8, fp9, fp10, fp11, fp12)
   )
 
-  implicit def field[A <: BigInt: ExtensionField: Field: ModsByPrime]: Field[FP12Elem[A]] = new Field.WithDefaultGCD[FP12Elem[A]] {
+  implicit def field[A <: BigInt: ExtensionField: Field: ModsByPrime]: Field[FP12Elem[A]] = new Field[FP12Elem[A]] {
     val fp6Zero = Field[FP6Elem[A]].zero
     def negate(x: FP12Elem[A]): FP12Elem[A] = -x
     val zero: FP12Elem[A] = FP12Elem[A](fp6Zero, fp6Zero)

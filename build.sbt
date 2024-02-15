@@ -1,18 +1,19 @@
 import scalariform.formatter.preferences._
 import org.typelevel.scalacoptions.ScalacOptions
 
-lazy val noPublish = Seq(
-  publish := {},
-  publishLocal := {},
-  publishArtifact := false)
+lazy val noPublish =
+  Seq(publish := {}, publishLocal := {}, publishArtifact := false)
 
 lazy val recryptSettings = Seq(
   organization := "com.ironcorelabs",
-  licenses += ("AGPL-3.0", new URL("https://www.gnu.org/licenses/agpl-3.0.txt")),
+  licenses += ("AGPL-3.0", new URL(
+    "https://www.gnu.org/licenses/agpl-3.0.txt"
+  )),
   scalaVersion := "2.13.12",
-  crossScalaVersions := Seq(scalaVersion.value, "2.12.18"),
-  headerLicense := Some(HeaderLicense.Custom(
-    """|Copyright (C) 2017-present  IronCore Labs
+  crossScalaVersions ++= Seq("2.13.12", "3.3.1"),
+  headerLicense := Some(
+    HeaderLicense.Custom(
+      """|Copyright (C) 2017-present  IronCore Labs
        |
        |This program is free software: you can redistribute it and/or modify
        |it under the terms of the GNU Affero General Public License as
@@ -26,78 +27,100 @@ lazy val recryptSettings = Seq(
        |
        |You should have received a copy of the GNU Affero General Public License
        |along with this program.  If not, see <http://www.gnu.org/licenses/>.""".stripMargin
-  )),
+    )
+  ),
   scalariformPreferences := scalariformPreferences.value
-  .setPreference(DanglingCloseParenthesis, Preserve),
+    .setPreference(DanglingCloseParenthesis, Preserve),
 
   // Test
   libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.2.17" % "test",
     "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
-    "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
-    "org.typelevel" %% "discipline-scalatest" % "2.2.0" %"test",
-    ) ++ Seq( // Core dependencies.
-    "org.typelevel" %% "spire" % "0.17.0",
+    "org.typelevel" %% "spire-laws" % "0.18.0" % "test",
+    "org.typelevel" %% "discipline-scalatest" % "2.2.0" % "test"
+  ) ++ Seq( // Core dependencies.
+    "org.typelevel" %% "spire" % "0.18.0",
     "org.scodec" %% "scodec-bits" % "1.1.38",
-    "org.typelevel" %% "cats-effect" % "3.5.3",
+    "org.typelevel" %% "cats-effect" % "3.5.3"
   ),
-  //Release configuration
+  // Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   isSnapshot := version.value endsWith "SNAPSHOT",
   homepage := Some(url("http://github.com/ironcorelabs/recrypt")),
-  publishTo := Some(
-    if (isSnapshot.value)
-      Opts.resolver.sonatypeSnapshots
-    else
-      Opts.resolver.sonatypeStaging),
   publishMavenStyle := true,
   Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
-  scmInfo := Some(ScmInfo(url("https://github.com/ironcorelabs/recrypt"), "git@github.com:ironcorelabs/recrypt.git")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/ironcorelabs/recrypt"),
+      "git@github.com:ironcorelabs/recrypt.git"
+    )
+  ),
   pomExtra := (
-      <developers>
+    <developers>
         {
-        Seq(
-          ("coltfred", "Colt Frederickson")
-        ).map {
-          case (id, name) =>
-            <developer>
+      Seq(
+        ("coltfred", "Colt Frederickson")
+      ).map { case (id, name) =>
+        <developer>
               <id>{id}</id>
               <name>{name}</name>
               <url>http://github.com/{id}</url>
             </developer>
-        }
       }
+    }
       </developers>
-    ),
+  ),
   coverageMinimumStmtTotal := 80,
   coverageFailOnMinimum := true,
-  //Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
+  // Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
   (Compile / scalastyleSources) ++= (Compile / unmanagedSourceDirectories).value,
-    Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
-  Test / tpolecatExcludeOptions += ScalacOptions.warnNonUnitStatement,
+  Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
   libraryDependencies ++= Seq(
-      "com.ironcorelabs" %% "cats-scalatest" % "3.1.1" % "test"
-    ),
-  scalacOptions ++= Seq(
-    "-Xcheckinit" // Wrap field accessors to throw an exception on uninitialized access.
-  ))
-
+    "com.ironcorelabs" %% "cats-scalatest" % "3.1.1" % "test"
+  ),
+  scalacOptions ++= {
+    Seq(
+      "-encoding",
+      "UTF-8",
+      "-feature",
+      "-language:implicitConversions"
+      // disabled during the migration
+      // "-Xfatal-warnings"
+    ) ++
+      (CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3, _)) =>
+          Seq(
+            "-unchecked",
+            "-source:3.0-migration"
+          )
+        case _ =>
+          Seq(
+            "-deprecation",
+            "-Xfatal-warnings",
+            "-Wunused:imports,privates,locals",
+            "-Wvalue-discard"
+          )
+      })
+  }
+)
 
 lazy val recrypt = project
   .in(file("."))
   .settings(moduleName := "recrypt-core")
   .settings(recryptSettings)
 
-
 //Benchmark target for running perf tests.
-lazy val benchmark = project.in(file("benchmark"))
+lazy val benchmark = project
+  .in(file("benchmark"))
   .dependsOn(recrypt)
   .settings(name := "recrypt-benchmark")
   .settings(recryptSettings: _*)
   .settings(coverageEnabled := false)
   .settings(noPublish: _*)
-  .settings(  libraryDependencies ++= Seq(
+  .settings(
+    libraryDependencies ++= Seq(
       "org.abstractj.kalium" % "kalium" % "0.8.0"
-    ))
+    )
+  )
   .enablePlugins(JmhPlugin)
