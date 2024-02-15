@@ -1,5 +1,4 @@
 import scalariform.formatter.preferences._
-import org.typelevel.scalacoptions.ScalacOptions
 
 lazy val noPublish =
   Seq(publish := {}, publishLocal := {}, publishArtifact := false)
@@ -9,8 +8,8 @@ lazy val recryptSettings = Seq(
   licenses += ("AGPL-3.0", new URL(
     "https://www.gnu.org/licenses/agpl-3.0.txt"
   )),
-  scalaVersion := "2.13.12",
-  crossScalaVersions ++= Seq("2.13.12", "3.3.1"),
+  scalaVersion := "3.3.1",
+  crossScalaVersions ++= Seq("2.13.12"),
   headerLicense := Some(
     HeaderLicense.Custom(
       """|Copyright (C) 2017-present  IronCore Labs
@@ -76,9 +75,9 @@ lazy val recryptSettings = Seq(
   // Workaround for issue: https://github.com/scalastyle/scalastyle-sbt-plugin/issues/47
   (Compile / scalastyleSources) ++= (Compile / unmanagedSourceDirectories).value,
   Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
-  libraryDependencies ++= Seq(
-    "com.ironcorelabs" %% "cats-scalatest" % "3.1.1" % "test"
-  ),
+  // libraryDependencies ++= Seq(
+  //   "com.ironcorelabs" %% "cats-scalatest" % "4.0.0" % "test"
+  // ),
   scalacOptions ++= {
     Seq(
       "-encoding",

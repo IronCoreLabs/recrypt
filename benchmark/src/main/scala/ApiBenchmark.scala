@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
 import com.ironcorelabs.recrypt
+import cats.effect.unsafe.implicits.global
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -11,7 +12,7 @@ class ApiBenchmark extends BenchmarkHelper {
   final val Ed25519Instance = recrypt.Ed25519Signing(
     { (privateRecryptKey, message) =>
       val sig = Ed25519.sign(
-        //To be safe, just pad out the bytes we get from recrypt.
+        // To be safe, just pad out the bytes we get from recrypt.
         Ed25519.PrivateKey.fromPaddedBytes(privateRecryptKey.bytes),
         message
       )
@@ -19,7 +20,7 @@ class ApiBenchmark extends BenchmarkHelper {
     },
     { (publicRecryptKey, message, signature) =>
       Ed25519.verify(
-        //To be safe, just pad out the bytes we get from recrypt.
+        // To be safe, just pad out the bytes we get from recrypt.
         Ed25519.PublicKey.fromPaddedBytes(publicRecryptKey.bytes),
         message,
         Ed25519.Signature.fromPaddedBytes(signature.bytes)
@@ -42,18 +43,37 @@ class ApiBenchmark extends BenchmarkHelper {
     privateKey = keyPair._1
     publicKey = keyPair._2
     plaintext = api.generatePlaintext.unsafeRunSync()
-    val signingKeyPair = randomBytesIO.map(Ed25519.generateKeyPair).unsafeRunSync()
+    val signingKeyPair =
+      randomBytesIO.map(Ed25519.generateKeyPair).unsafeRunSync()
     publicSigningKey = recrypt.PublicSigningKey(signingKeyPair._1.bytes)
     privateSigningKey = recrypt.PrivateSigningKey(signingKeyPair._2.bytes)
-    encryptedMessage = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
-    transformKey = api.generateTransformKey(privateKey, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
+    encryptedMessage = api
+      .encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey)
+      .unsafeRunSync()
+    transformKey = api
+      .generateTransformKey(
+        privateKey,
+        publicKey,
+        publicSigningKey,
+        privateSigningKey
+      )
+      .unsafeRunSync()
   }
 
   @Benchmark
-  def encrypt() = api.encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey).unsafeRunSync()
+  def encrypt() = api
+    .encrypt(plaintext, publicKey, publicSigningKey, privateSigningKey)
+    .unsafeRunSync()
 
   @Benchmark
-  def transform() = api.transform(encryptedMessage, transformKey, publicSigningKey, privateSigningKey).unsafeRunSync()
+  def transform() = api
+    .transform(
+      encryptedMessage,
+      transformKey,
+      publicSigningKey,
+      privateSigningKey
+    )
+    .unsafeRunSync()
 
   @Benchmark
   def computePublicKey() = api.computePublicKey(privateKey).unsafeRunSync()

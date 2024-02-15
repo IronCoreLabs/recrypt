@@ -6,6 +6,7 @@ import org.openjdk.jmh.annotations._
 import com.ironcorelabs.recrypt.internal._
 import point.HomogeneousPoint
 import cats.implicits._
+import cats.effect.unsafe.implicits.global
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -19,7 +20,8 @@ class HomogeneousPointBenchmark extends BenchmarkHelper {
 
   @Setup
   def setup(): Unit = {
-    points = Vector.fill(size)(randomFp.map(point.times)).sequence.unsafeRunSync()
+    points =
+      Vector.fill(size)(randomFp.map(point.times)).sequence.unsafeRunSync()
   }
 
   @Benchmark

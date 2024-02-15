@@ -32,7 +32,7 @@ import cats.syntax.either._
  * We get the guarantees about Fp480's safety by modding anytime someone calls the apply on the companion
  * object, but without any runtime allocations.
  */
-final object Fp480 {
+object Fp480 {
   def apply(x: BigInt): Impl.T = Impl(x)
   def apply(b: ByteVector): Impl.T = Impl(b)
   trait BigIntImpl {
@@ -124,7 +124,7 @@ final object Fp480 {
   }
 
   //Object which contains the implicits for Fp480.
-  final object implicits { // scalastyle:ignore object.name
+  object implicits { // scalastyle:ignore object.name
     implicit val fp480Eq: Eq[Fp480.Impl.T] = Eq.fromUniversalEquals
     implicit val fieldForFp480: Field[Fp480.Impl.T] = new Field[Fp480] {
       //These casts are safe because they shouldn't ever produce something that is

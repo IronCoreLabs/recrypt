@@ -38,7 +38,7 @@ sealed abstract case class SchnorrSignature(bytes: ByteVector) {
   }
 }
 
-final object SchnorrSignature {
+object SchnorrSignature {
   private val rLengthLong = 32L
   private val sLengthLong = 32L
   val LengthLong = rLengthLong + sLengthLong

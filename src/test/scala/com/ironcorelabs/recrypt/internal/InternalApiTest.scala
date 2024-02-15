@@ -181,7 +181,7 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
     }
 
     "follow the law pair(a * P, a * Q) == pair(a^2 * P, Q) == pair(P,a^2 * Q)" in {
-      forAll { a: BigInt =>
+      forAll { (a: BigInt) =>
         whenever(a != 0) {
           val baseResult = encryptInstance.pairing.pair(basePoint.times(a), goodHomogeneousPoint.times(a))
           baseResult shouldBe encryptInstance.pairing.pair(basePoint.times(a.pow(2)), goodHomogeneousPoint)
@@ -190,7 +190,7 @@ class InternalApiTest extends com.ironcorelabs.recrypt.TestBase {
       }
     }
     "follow the law pair(a * P, a * Q) == pair(P, Q) ^ (a^2)" in {
-      forAll { a: BigInt =>
+      forAll { (a: BigInt) =>
         whenever(a != 0) {
           encryptInstance.pairing.pair(basePoint.times(a), goodHomogeneousPoint.times(a)) shouldBe encryptInstance.pairing.pair(basePoint, goodHomogeneousPoint) ^ (a.pow(2))
         }

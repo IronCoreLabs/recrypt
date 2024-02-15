@@ -42,7 +42,7 @@ final case class TransformKey(
 }
 
 object TransformKey {
-  implicit val hashable: Hashable[TransformKey] = Hashable.by { tk: TransformKey =>
+  implicit val hashable: Hashable[TransformKey] = Hashable.by { (tk: TransformKey) =>
     tk.ephemeralPublicKey.toHashBytes ++ tk.toPublicKey.toHashBytes ++ tk.encryptedTempKey.toHashBytes ++
       tk.hashedTempKey.toHashBytes ++ tk.publicSigningKey.toHashBytes
   }

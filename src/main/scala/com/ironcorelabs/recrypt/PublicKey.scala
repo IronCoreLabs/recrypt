@@ -43,7 +43,7 @@ sealed abstract case class PublicKey(x: ByteVector, y: ByteVector) {
 }
 
 object PublicKey {
-  implicit val hashable: Hashable[PublicKey] = Hashable.by { pk: PublicKey => pk.x ++ pk.y }
+  implicit val hashable: Hashable[PublicKey] = Hashable.by { (pk: PublicKey) => pk.x ++ pk.y }
 
   def apply(x: ByteVector, y: ByteVector): Either[ApiError, PublicKey] =
     internal.PublicKey.fromByteVectors(x, y).leftMap(_ => InvalidPublicKey).map(internalPK => new PublicKey(x, y) { val internalKey = internalPK })

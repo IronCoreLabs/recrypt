@@ -39,7 +39,7 @@ object Hashable {
   def by[A](f: A => ByteVector): Hashable[A] = (a: A) => f(a)
 
   implicit def instance: Contravariant[Hashable] = new Contravariant[Hashable] {
-    def contramap[A, B](fa: Hashable[A])(f: B => A): Hashable[B] = Hashable.by { b: B => fa(f(b)) }
+    def contramap[A, B](fa: Hashable[A])(f: B => A): Hashable[B] = Hashable.by { (b: B) => fa(f(b)) }
   }
 
   implicit val hashableInt: Hashable[Int] = by(i => ByteVector.fromInt(i, 4, ByteOrdering.BigEndian))
