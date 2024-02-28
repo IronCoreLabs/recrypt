@@ -20,7 +20,6 @@ package com.ironcorelabs.recrypt.internal
 import spire.algebra.Field
 import point.{ HomogeneousPoint }
 import cats.Eq
-import spire.implicits._
 
 class Pairing[FpType <: BigInt: Field: ExtensionField](implicit fpTypePairingConfig: PairingConfig[FpType], mods: ModsByPrime[FpType]) {
   //These are used in the frobenius method below

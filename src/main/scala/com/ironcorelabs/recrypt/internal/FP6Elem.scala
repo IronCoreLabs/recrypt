@@ -19,7 +19,6 @@ package com.ironcorelabs.recrypt.internal
 
 import spire.algebra.Field
 import cats.kernel.Eq
-import spire.implicits._
 import cats.syntax.eq._
 import cats.syntax.contravariant._
 
