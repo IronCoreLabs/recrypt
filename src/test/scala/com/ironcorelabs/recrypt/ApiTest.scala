@@ -20,7 +20,6 @@ package com.ironcorelabs.recrypt
 import scodec.bits._
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
-import spire.implicits._
 import spire.algebra.Field
 import internal.Fp.implicits._
 

@@ -168,7 +168,6 @@ final object Fp480 {
     }
 
     implicit val pairingConfigFp480: PairingConfig[Fp480.Impl.T] = new PairingConfig[Fp480.Impl.T] {
-      import spire.implicits._
       //NAF of 6*BNParam + 2
       private[this] val NAF = IndexedSeq(0, 0, 0, -1, 0, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 1, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, 0, 1, 0) //scalastyle:ignore
       // The reason we drop(2) is because of Algorithm 1 in High-Speed Software Implementation of the Optimal Ate Pairing over Barreto–Naehrig Curves
