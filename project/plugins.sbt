@@ -1,6 +1,6 @@
 addSbtPlugin("org.scalastyle"           %% "scalastyle-sbt-plugin" % "1.0.0")
 addSbtPlugin("org.scalariform"           % "sbt-scalariform"       % "1.8.3")
-addSbtPlugin("org.scoverage"             % "sbt-scoverage"         % "2.0.12")
+addSbtPlugin("org.scoverage"             % "sbt-scoverage"         % "2.1.0")
 addSbtPlugin("com.github.sbt"            % "sbt-release"           % "1.4.0")
 addSbtPlugin("pl.project13.scala"        % "sbt-jmh"               % "0.4.7")
 addSbtPlugin("com.github.sbt"            % "sbt-pgp"               % "2.2.1")
