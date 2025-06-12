@@ -1,6 +1,7 @@
 import scalariform.formatter.preferences._
 import org.typelevel.scalacoptions.ScalacOptions
 import xerial.sbt.Sonatype.sonatypeCentralHost
+import ReleaseTransformations._
 
 lazy val noPublish = Seq(
   publish := {},
@@ -44,6 +45,21 @@ lazy val recryptSettings = Seq(
   ),
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  releaseCrossBuild := true,
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    releaseStepCommandAndRemaining("+publishSigned"),
+    releaseStepCommand("sonatypeBundleRelease"),
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  ),
   isSnapshot := version.value endsWith "SNAPSHOT",
   homepage := Some(url("http://github.com/ironcorelabs/recrypt")),
   sonatypeCredentialHost := sonatypeCentralHost,
