@@ -1,5 +1,6 @@
 import scalariform.formatter.preferences._
 import org.typelevel.scalacoptions.ScalacOptions
+import xerial.sbt.Sonatype.sonatypeCentralHost
 
 lazy val noPublish = Seq(
   publish := {},
@@ -45,11 +46,8 @@ lazy val recryptSettings = Seq(
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   isSnapshot := version.value endsWith "SNAPSHOT",
   homepage := Some(url("http://github.com/ironcorelabs/recrypt")),
-  publishTo := Some(
-    if (isSnapshot.value)
-      Opts.resolver.sonatypeSnapshots
-    else
-      Opts.resolver.sonatypeStaging),
+  sonatypeCredentialHost := sonatypeCentralHost,
+  publishTo := sonatypePublishToBundle.value,
   publishMavenStyle := true,
   Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
