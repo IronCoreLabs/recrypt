@@ -2,6 +2,7 @@ package bench
 
 import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
+import cats.effect.unsafe.implicits.global
 
 import com.ironcorelabs.recrypt
 

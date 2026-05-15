@@ -111,7 +111,7 @@ lazy val benchmark = project.in(file("benchmark"))
   .settings(recryptSettings: _*)
   .settings(coverageEnabled := false)
   .settings(noPublish: _*)
-  .settings(  libraryDependencies ++= Seq(
-      "org.abstractj.kalium" % "kalium" % "0.8.0"
-    ))
+  .settings(libraryDependencies ++= Seq(
+    "org.bouncycastle" % "bcprov-jdk18on" % "1.84"
+  ))
   .enablePlugins(JmhPlugin)
