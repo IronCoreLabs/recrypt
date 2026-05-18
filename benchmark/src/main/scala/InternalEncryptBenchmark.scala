@@ -5,6 +5,7 @@ import org.openjdk.jmh.annotations._
 
 import com.ironcorelabs.recrypt.internal._
 import scodec.bits.ByteVector
+import cats.effect.unsafe.implicits.global
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)

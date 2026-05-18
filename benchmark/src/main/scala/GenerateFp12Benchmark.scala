@@ -6,6 +6,7 @@ import org.openjdk.jmh.annotations._
 import com.ironcorelabs.recrypt.internal._
 import cats.instances.list._
 import cats.syntax.traverse._
+import cats.effect.unsafe.implicits.global
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
