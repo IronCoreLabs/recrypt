@@ -34,14 +34,14 @@ lazy val recryptSettings = Seq(
 
   // Test
   libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % "3.2.19" % "test",
+    "org.scalatest" %% "scalatest" % "3.2.20" % "test",
     "org.scalacheck" %% "scalacheck" % "1.19.0" % "test",
     "org.typelevel" %% "spire-laws" % "0.17.0" % "test",
     "org.typelevel" %% "discipline-scalatest" % "2.3.0" %"test",
     ) ++ Seq( // Core dependencies.
     "org.typelevel" %% "spire" % "0.17.0",
-    "org.scodec" %% "scodec-bits" % "1.2.4",
-    "org.typelevel" %% "cats-effect" % "3.6.3",
+    "org.scodec" %% "scodec-bits" % "1.2.5",
+    "org.typelevel" %% "cats-effect" % "3.7.0",
   ),
   //Release configuration
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
@@ -111,7 +111,7 @@ lazy val benchmark = project.in(file("benchmark"))
   .settings(recryptSettings: _*)
   .settings(coverageEnabled := false)
   .settings(noPublish: _*)
-  .settings(  libraryDependencies ++= Seq(
-      "org.abstractj.kalium" % "kalium" % "0.8.0"
-    ))
+  .settings(libraryDependencies ++= Seq(
+    "org.bouncycastle" % "bcprov-jdk18on" % "1.84"
+  ))
   .enablePlugins(JmhPlugin)

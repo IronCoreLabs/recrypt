@@ -22,12 +22,11 @@
         };
       in
       rec {
-        devShell = devShells."temurin@21";
+        devShell = devShells."temurin@25";
 
         devShells = {
-          "temurin@21" = mkShell pkgs.temurin-bin-21;
+          "temurin@25" = mkShell pkgs.temurin-bin-25;
         };
       }
     );
 }
-
