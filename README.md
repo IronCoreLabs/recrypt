@@ -79,7 +79,7 @@ The NCC Group has conducted an audit of this library - we have a blog post about
 
 ## Building
 
-Recrypt requires openjdk8+ and is known to build under Linux and MacOSX.
+Recrypt requires openjdk21+ and is known to build under Linux and MacOSX.
 
 https://github.com/paulp/sbt-extras can be used to get sbt.
 
