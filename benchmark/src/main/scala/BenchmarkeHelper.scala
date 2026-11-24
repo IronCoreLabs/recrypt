@@ -1,14 +1,14 @@
 package bench
 
 import cats.effect.IO
-import scodec.bits.ByteVector
-import com.ironcorelabs.recrypt.internal.{ Fp, FP12Elem }
 import cats.implicits._
-import Fp.implicits._
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
+import com.ironcorelabs.recrypt.internal.{FP12Elem, Fp}
+import scodec.bits.ByteVector
 
 trait BenchmarkHelper {
   val randomBytesIO: IO[ByteVector] = {
-    //Start with a known value, we'll just add one to it each time
+    // Start with a known value, we'll just add one to it each time
     var i = 100L
     val hashFunc = java.security.MessageDigest.getInstance("SHA-256").digest(_: Array[Byte])
     IO {

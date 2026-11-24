@@ -17,16 +17,21 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import point.HomogeneousPoint
-import Fp.implicits._
 import cats.Eq
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
+import com.ironcorelabs.recrypt.internal.point.HomogeneousPoint
 
 class PublicKeyGenTest extends com.ironcorelabs.recrypt.TestBase {
 
   "KeyGen" should {
     "generate known key" in {
       val privateKey = PrivateKey.fromBigInt(BigInt("37777967648492203239675772600961898148040325589588086812374811831221462604944"))
-      val expectedResult = PublicKey(HomogeneousPoint(Fp(BigInt("56377452267431283559088187378398270325210563762492926393848580098576649271541")), Fp(BigInt("46643694276241842996939080253335644316475473619096522181405937227991761798154"))).value)
+      val expectedResult = PublicKey(
+        HomogeneousPoint(
+          Fp(BigInt("56377452267431283559088187378398270325210563762492926393848580098576649271541")),
+          Fp(BigInt("46643694276241842996939080253335644316475473619096522181405937227991761798154"))
+        ).value
+      )
       val result = new PublicKeyGen(Fp.curvePoints.generator)(privateKey)
       val eq = Eq[PublicKey[Fp]]
       eq.eqv(result, expectedResult) shouldBe true
@@ -34,7 +39,12 @@ class PublicKeyGenTest extends com.ironcorelabs.recrypt.TestBase {
 
     "generate known key (max 32-byte private key)" in {
       val privateKey = PrivateKey.fromBigInt(BigInt("50791539541669591690774546266328002110444626558017560467580438981048945568152"))
-      val expectedResult = PublicKey(HomogeneousPoint(Fp(BigInt("58483620629232886210555514960799664032881966270053836377116209031946678864174")), Fp(BigInt("39604663823550822619127054070927331080305575010367415285113646212320556073913"))).value)
+      val expectedResult = PublicKey(
+        HomogeneousPoint(
+          Fp(BigInt("58483620629232886210555514960799664032881966270053836377116209031946678864174")),
+          Fp(BigInt("39604663823550822619127054070927331080305575010367415285113646212320556073913"))
+        ).value
+      )
       val result = PublicKeyGen(Fp.curvePoints.generator)(privateKey)
       val eq = Eq[PublicKey[Fp]]
       eq.eqv(result, expectedResult) shouldBe true

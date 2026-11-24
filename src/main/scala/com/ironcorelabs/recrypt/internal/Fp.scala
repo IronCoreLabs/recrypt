@@ -18,9 +18,9 @@
 package com.ironcorelabs.recrypt.internal
 
 import cats.kernel.Eq
+import cats.syntax.either._
 import scodec.bits.ByteVector
 import spire.algebra.Field
-import cats.syntax.either._
 
 /**
  * Fp represents a value in the field of integers mod some Prime - that is, values in [0, Prime - 1].
@@ -32,7 +32,7 @@ import cats.syntax.either._
  * We get the guarantees about Fp's safety by modding anytime someone calls the apply on the companion
  * object, but without any runtime allocations.
  */
-final object Fp {
+object Fp {
   def apply(x: BigInt): Impl.T = Impl(x)
   def apply(b: ByteVector): Impl.T = Impl(b)
   trait BigIntImpl {
@@ -47,14 +47,14 @@ final object Fp {
     def apply(b: ByteVector): T = apply(byteVectorToBigInt(b))
   }
 
-  //For info on the Algorithm, etc. Please refer to Fp.scala.
-  //BNParam for this is
+  // For info on the Algorithm, etc. Please refer to Fp.scala.
+  // BNParam for this is
   final val Prime = BigInt("65000549695646603732796438742359905742825358107623003571877145026864184071783")
   final val Order = BigInt("65000549695646603732796438742359905742570406053903786389881062969044166799969")
   val Zero = Fp(BigIntZero)
   val One = Fp(BigIntOne)
 
-  //The leading byte is a 0 since Prime is positive, we don't want that in all the sizes.
+  // The leading byte is a 0 since Prime is positive, we don't want that in all the sizes.
   val ExpectedFpLength: Long = Prime.toByteArray.length - 1L
   val ExpectedOrderLength: Long = Order.toByteArray.length - 1L
 
@@ -62,23 +62,23 @@ final object Fp {
    * inverse mod a prime is always in Fp, so the cast is safe.
    */
   def inverseModPrime(fp: Fp): Fp = inverse(fp, Prime).getOrElse(Fp.Zero).asInstanceOf[Fp]
+
   /**
    * Only call this if `i` is very close to the Prime, otherwise it will be inefficient.
    */
   @annotation.tailrec
-  def fastModPrime(i: BigInt): Fp = {
+  def fastModPrime(i: BigInt): Fp =
     if (i >= Fp.Prime) {
       fastModPrime(i - Prime)
     } else {
       Fp(i)
     }
-  }
 
   def bigIntToByteVector(b: BigInt): ByteVector = {
     val zeroByte = 0.toByte
     val byteVector = ByteVector.view(b.toByteArray)
-    //Drop the leading zero if there is one (Because this value is positive.) Then make sure that the
-    //byteVector is padded out to ExpectedFpLength
+    // Drop the leading zero if there is one (Because this value is positive.) Then make sure that the
+    // byteVector is padded out to ExpectedFpLength
     byteVector.dropWhile(_ == zeroByte).padLeft(ExpectedFpLength)
   }
 
@@ -125,13 +125,13 @@ final object Fp {
     )
   }
 
-  //Object which contains the implicits for Fp.
-  final object implicits { // scalastyle:ignore object.name
+  // Object which contains the implicits for Fp.
+  object implicits {
     implicit val hashableFp: Hashable[Fp.Impl.T] = Hashable.by(bigIntToByteVector)
     implicit val fpEq: Eq[Fp.Impl.T] = Eq.fromUniversalEquals
-    implicit val fieldForFp: Field[Fp.Impl.T] = new Field.WithDefaultGCD[Fp] {
-      //These casts are safe because they shouldn't ever produce something that is
-      //not in Fp. This is demonstrated in unit tests, but not statically.
+    implicit val fieldForFp: Field[Fp.Impl.T] = new Field[Fp] {
+      // These casts are safe because they shouldn't ever produce something that is
+      // not in Fp. This is demonstrated in unit tests, but not statically.
       def negate(x: Fp): Fp = if (x == Fp.Zero) Fp.Zero else (Fp.Prime - x).asInstanceOf[Fp]
       val zero: Fp = Fp.Zero
       def plus(x: Fp, y: Fp): Fp = fastModPrime(x + y)
@@ -165,14 +165,15 @@ final object Fp {
     }
 
     implicit val pairingConfigFp: PairingConfig[Fp.Impl.T] = new PairingConfig[Fp.Impl.T] {
-      //NAF of 6*BNParam + 2
-      private[this] val NAF = IndexedSeq(0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1, 0, -1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0) //scalastyle:ignore
+      // NAF of 6*BNParam + 2
+      private[this] val NAF = IndexedSeq(0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, -1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 1, 0,
+        -1, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0)
       // The reason we drop(2) is because of Algorithm 1 in High-Speed Software Implementation of the Optimal Ate Pairing over Barreto–Naehrig Curves
       val nafForLoop: IndexedSeq[Int] = NAF.reverse.drop(2)
-      //This is based on the BNParam. It's the cuberoot of BNParam. It should always be called
-      //in multiples of 3.
+      // This is based on the BNParam. It's the cuberoot of BNParam. It should always be called
+      // in multiples of 3.
       def bnPow(self: FP12Elem[Fp.Impl.T]): FP12Elem[Fp.Impl.T] = {
-        //This is a hardcode of the square and multiply for bnPow
+        // This is a hardcode of the square and multiply for bnPow
         var x = self
         var res = x
         1.to(8).foreach(_ => x = square(x))

@@ -1,12 +1,12 @@
 package bench
 
-import java.util.concurrent.TimeUnit
-import org.openjdk.jmh.annotations._
-
-import com.ironcorelabs.recrypt.internal._
+import cats.effect.unsafe.implicits.global
 import cats.instances.list._
 import cats.syntax.traverse._
-import cats.effect.unsafe.implicits.global
+import com.ironcorelabs.recrypt.internal._
+import org.openjdk.jmh.annotations._
+
+import java.util.concurrent.TimeUnit
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -19,13 +19,12 @@ class GenerateFp12ElemBenchmark extends BenchmarkHelper {
 
   var fp12s: List[FP12Elem[Fp]] = List.empty
   private[this] val fp12Elem = pairing.pair(Fp.curvePoints.generator, Fp.curvePoints.g1)
-  //Old, inferior way of doing fp12 generation. Here just for comparison with FinalExp.
+  // Old, inferior way of doing fp12 generation. Here just for comparison with FinalExp.
   def generateFp12(fp: Fp): FP12Elem[Fp] = fp12Elem ^ fp
 
   @Setup
-  def setup(): Unit = {
+  def setup(): Unit =
     fp12s = List.fill(size)(randomFp12IO).sequence.unsafeRunSync()
-  }
 
   @Benchmark
   def generateUsingFinalExp() = fp12s.foreach(pairing.finalExponentiation(_))

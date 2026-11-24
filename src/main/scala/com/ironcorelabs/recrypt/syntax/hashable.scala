@@ -20,7 +20,7 @@ package syntax
 
 import scodec.bits.ByteVector
 
-object hashable extends HashableSyntaxBase //scalastyle:ignore
+object hashable extends HashableSyntaxBase
 
 trait HashableSyntaxBase {
   implicit class HashableSyntax[A](val a: A) {

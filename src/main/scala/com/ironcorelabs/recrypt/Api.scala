@@ -19,12 +19,14 @@ package com.ironcorelabs.recrypt
 
 import cats.effect.IO
 import scodec.bits.ByteVector
+
 /**
  * An instance of the recrypt Api.
  * @param randomByteVector: An IO that should return a new cryptographically random ByteVector that is at least 32 bytes long on each invocation.
  */
-class Api(randomByteVector: IO[ByteVector], signing: Ed25519Signing) extends CoreApi(
-  randomByteVector,
-  Sha256,
-  signing
-)
+class Api(randomByteVector: IO[ByteVector], signing: Ed25519Signing)
+    extends CoreApi(
+      randomByteVector,
+      Sha256,
+      signing
+    )

@@ -18,7 +18,6 @@
 package com.ironcorelabs.recrypt.internal
 
 import cats.syntax.either._
-
 import scodec.bits.ByteVector
 
 trait BytesDecoder[A] {

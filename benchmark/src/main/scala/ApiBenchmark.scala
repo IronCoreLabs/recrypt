@@ -1,10 +1,10 @@
 package bench
 
-import java.util.concurrent.TimeUnit
-import org.openjdk.jmh.annotations._
 import cats.effect.unsafe.implicits.global
-
 import com.ironcorelabs.recrypt
+import org.openjdk.jmh.annotations._
+
+import java.util.concurrent.TimeUnit
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -12,20 +12,19 @@ class ApiBenchmark extends BenchmarkHelper {
   final val Ed25519Instance = recrypt.Ed25519Signing(
     { (privateRecryptKey, message) =>
       val sig = Ed25519.sign(
-        //To be safe, just pad out the bytes we get from recrypt.
+        // To be safe, just pad out the bytes we get from recrypt.
         Ed25519.PrivateKey.fromPaddedBytes(privateRecryptKey.bytes),
         message
       )
       recrypt.Signature(sig.bytes)
     },
-    { (publicRecryptKey, message, signature) =>
+    (publicRecryptKey, message, signature) =>
       Ed25519.verify(
-        //To be safe, just pad out the bytes we get from recrypt.
+        // To be safe, just pad out the bytes we get from recrypt.
         Ed25519.PublicKey.fromPaddedBytes(publicRecryptKey.bytes),
         message,
         Ed25519.Signature.fromPaddedBytes(signature.bytes)
       )
-    }
   )
   val api = new recrypt.Api(randomBytesIO, Ed25519Instance)
 

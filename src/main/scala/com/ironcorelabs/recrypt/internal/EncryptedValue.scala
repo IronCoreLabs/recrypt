@@ -18,8 +18,8 @@
 package com.ironcorelabs.recrypt.internal
 
 import cats.data.NonEmptyVector
-import scodec.bits.ByteVector
 import com.ironcorelabs.recrypt.syntax.hashable._
+import scodec.bits.ByteVector
 
 /**
  * The AuthHash is a value included in an encrypted message that can be used when the message
@@ -41,7 +41,7 @@ object AuthHash {
 sealed abstract class EncryptedValue[A <: BigInt] {
   def fold[B](f: EncryptedOnceValue[A] => B, g: ReencryptedValue[A] => B): B = this match {
     case e: EncryptedOnceValue[_] => f(e)
-    case r: ReencryptedValue[_] => g(r)
+    case r: ReencryptedValue[_]   => g(r)
   }
   def authHash: AuthHash
   def ephemeralPublicKey: PublicKey[A]
@@ -106,4 +106,3 @@ object ReencryptionBlock {
       publicKey.toHashBytes ++ tempKey.toHashBytes ++ randomRePublicKey.toHashBytes ++ randomReEncTempKey.toHashBytes
   }
 }
-

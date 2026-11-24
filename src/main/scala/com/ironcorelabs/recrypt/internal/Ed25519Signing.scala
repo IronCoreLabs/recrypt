@@ -23,10 +23,12 @@ import scodec.bits.ByteVector
  * An interface which defines how to sign and verify in Recrypt.
  */
 abstract class Ed25519Signing {
+
   /**
    * Sign message using privateSigningKey.
    */
   def sign[A: Hashable](privateKey: PrivateSigningKey, message: A): Signature
+
   /**
    * Verify that signature is valid for message using PublicSigningKey
    */

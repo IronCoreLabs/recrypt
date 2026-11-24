@@ -17,14 +17,14 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import Fp.implicits._
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
 import org.scalacheck.Arbitrary
-import spire.implicits._
 import scodec.bits.BitVector
+import spire.implicits._
 
 class FpTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
-  //Things in here are fundemental operations so tehy should work even for 0
+  // Things in here are fundemental operations so tehy should work even for 0
   implicit val fpArb: Arbitrary[Fp] = Arbitrary(fpGen)
 
   "Fp.apply" should {
@@ -36,33 +36,30 @@ class FpTest extends com.ironcorelabs.recrypt.TestBase {
   }
 
   "Fp.negate" should {
-    "Always be in Fp" in {
+    "Always be in Fp" in
       forAll { (fp: Fp) =>
         val negateResult = spire.algebra.Field[Fp].negate(fp)
         negateResult shouldBe Fp(negateResult)
       }
-    }
   }
 
   "Fp.fastModPrime" should {
-    "work for elements greater than 2 * Prime" in {
+    "work for elements greater than 2 * Prime" in
       forAll { (fp: Fp) =>
-        val bigIntFp: BigInt = fp //100% sure that it will be widened to the big int before +
+        val bigIntFp: BigInt = fp // 100% sure that it will be widened to the big int before +
         val biggerThanPrime = bigIntFp + Fp.Prime * 5
         val fastModResult = Fp.fastModPrime(biggerThanPrime)
         fastModResult shouldBe fp
         fastModResult shouldBe positiveMod(biggerThanPrime, Fp.Prime)
       }
-    }
-    "work for all numbers" in {
+    "work for all numbers" in
       forAll { (b: BigInt) =>
         Fp.fastModPrime(b) shouldBe Fp(b)
       }
-    }
   }
 
   "Fp.reciprocal" should {
-    "Always be 1 in *" in {
+    "Always be 1 in *" in
       forAll { (fp: Fp) =>
         if (fp != Fp.Zero) {
           Fp(fp.reciprocal * fp) shouldBe Fp.One
@@ -70,7 +67,6 @@ class FpTest extends com.ironcorelabs.recrypt.TestBase {
           fp.reciprocal shouldBe Fp.Zero
         }
       }
-    }
   }
 
   "Fp.ModsByPrime.create" should {

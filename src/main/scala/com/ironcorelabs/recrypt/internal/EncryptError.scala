@@ -16,6 +16,7 @@
  */
 
 package com.ironcorelabs.recrypt.internal
+
 /**
  * Classes of errors that happen on Encrypt/Decrypt.
  */

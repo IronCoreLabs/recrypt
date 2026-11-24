@@ -17,15 +17,15 @@
 
 package com.ironcorelabs.recrypt.internal
 package point
-import spire.algebra.Field
 import algebra.ring.AdditiveCommutativeGroup
-import spire.implicits._
-import cats.kernel.Eq
-import scodec.bits.ByteVector
-import cats.syntax.apply._
 import cats.instances.either._
-import cats.syntax.either._
+import cats.kernel.Eq
+import cats.syntax.apply._
 import cats.syntax.contravariant._
+import cats.syntax.either._
+import scodec.bits.ByteVector
+import spire.algebra.Field
+import spire.implicits._
 
 object HomogeneousPoint {
   implicit def aGroup[A: Field: Eq]: AdditiveCommutativeGroup[HomogeneousPoint[A]] = new AdditiveCommutativeGroup[HomogeneousPoint[A]] {
@@ -38,7 +38,7 @@ object HomogeneousPoint {
   }
   implicit def eq[A](implicit aEq: Eq[A], field: Field[A]): Eq[HomogeneousPoint[A]] = Eq.instance {
     case (HomogeneousPoint(x, y, z), HomogeneousPoint(x1, y1, z1)) =>
-      //This is to save doing inverses on z and z1. For equality we can instead do the multiplation instead.
+      // This is to save doing inverses on z and z1. For equality we can instead do the multiplation instead.
       (aEq.eqv(z, z1) && aEq.eqv(x, x1) && aEq.eqv(y, y1)) || (aEq.eqv(x * z1, x1 * z) && aEq.eqv(y * z1, y1 * z))
   }
 
@@ -47,10 +47,11 @@ object HomogeneousPoint {
    */
   implicit def hashable[A](implicit A: Hashable[A]): Hashable[HomogeneousPoint[A]] = Hashable[Option[(A, A)]].contramap(_.normalize)
 
-  //This will take 2 FP2Elem points which are concatenated.
-  //If the point isn't on the curve or if the bytes didn't represent 2 FP2Elems, left. Otherwise Right(HomogeneousPoint[FP12Elem])
+  // This will take 2 FP2Elem points which are concatenated.
+  // If the point isn't on the curve or if the bytes didn't represent 2 FP2Elems, left. Otherwise Right(HomogeneousPoint[FP12Elem])
   def fromXYByteVectorOnTwistedCurve[A <: BigInt: BytesDecoder: Field: ExtensionField: Eq: ModsByPrime](
-    bytes: ByteVector): Either[PointError, HomogeneousPoint[FP2Elem[A]]] = {
+    bytes: ByteVector
+  ): Either[PointError, HomogeneousPoint[FP2Elem[A]]] = {
     val twistedCurveConstCoeff: FP2Elem[A] = implicitly[ExtensionField[A]].xi.reciprocal * 3 //  3 / (u + 3) //COLT: Should move to prime field maybe?
     val (first, second) = bytes.splitAt(bytes.size / 2)
 
@@ -59,21 +60,19 @@ object HomogeneousPoint {
       BytesDecoder[FP2Elem[A]].decode(second).leftMap(_ => InvalidCoordinate(first, "Bytes for y coordinate didn't represent a valid FP2Elem"))
     ).tupled
 
-    candidateXY.flatMap {
-      case (x, y) =>
-        if (y.pow(2) === (x.pow(3) + twistedCurveConstCoeff))
-          HomogeneousPoint[FP2Elem[A]](x, y, Field[FP2Elem[A]].one).asRight
-        else
-          PointNotOnCurve(x, y).asLeft
+    candidateXY.flatMap { case (x, y) =>
+      if (y.pow(2) === (x.pow(3) + twistedCurveConstCoeff))
+        HomogeneousPoint[FP2Elem[A]](x, y, Field[FP2Elem[A]].one).asRight
+      else
+        PointNotOnCurve(x, y).asLeft
     }
   }
 
-  def apply[A: Field: Eq](x: A, y: A): Either[PointError, HomogeneousPoint[A]] = {
+  def apply[A: Field: Eq](x: A, y: A): Either[PointError, HomogeneousPoint[A]] =
     if (x.pow(3) + 3 == y.pow(2))
       withoutCurveValidation(x, y).asRight
     else
       PointNotOnCurve(x, y).asLeft
-  }
 
   def withoutCurveValidation[A: Field: Eq](x: A, y: A): HomogeneousPoint[A] =
     HomogeneousPoint(x, y, Field[A].one)
@@ -85,12 +84,14 @@ object HomogeneousPoint {
  *
  * Note that this value is *not* verified to be on the curve. If you want to do that, it'll have to be done as part of the translation
  * for whatever A type the coordinate represents.
+ *
+ * Use the two-argument HomogeneousPoint.apply when you need the curve check.
  */
-final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField: Field[A], eqA: Eq[A]) {
+final case class HomogeneousPoint[A](x: A, y: A, z: A)(implicit aField: Field[A], eqA: Eq[A]) {
   private[this] val ZeroA: A = aField.zero
   private[this] def zeroPoint: HomogeneousPoint[A] = HomogeneousPoint(aField.zero, aField.one, aField.zero)
   def negate: HomogeneousPoint[A] = HomogeneousPoint[A](x, -y, z)
-  def double: HomogeneousPoint[A] = {
+  def double: HomogeneousPoint[A] =
     if (isZero) {
       this
     } else if (y === ZeroA) {
@@ -107,8 +108,7 @@ final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField:
       val z2 = eightTimesYsquaredTimesZ * y * zSquared
       HomogeneousPoint[A](x2, y2, z2)
     }
-  }
-  def add(p: HomogeneousPoint[A]): HomogeneousPoint[A] = {
+  def add(p: HomogeneousPoint[A]): HomogeneousPoint[A] =
     if (isZero) {
       p
     } else if (p.isZero) {
@@ -116,8 +116,8 @@ final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField:
     } else {
       p match {
         case HomogeneousPoint(x2, y2, z2) if x === x2 && y === -y2 && z === z2 => zeroPoint
-        case h @ HomogeneousPoint(_, _, _) if h === this => double
-        case HomogeneousPoint(x2, y2, z2) =>
+        case h @ HomogeneousPoint(_, _, _) if h === this                       => double
+        case HomogeneousPoint(x2, y2, z2)                                      =>
           val yTimesZ2 = y * z2
           val xTimesZ2 = x * z2
           val x2TimesZ = x2 * z
@@ -135,8 +135,7 @@ final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField:
           HomogeneousPoint[A](x3, y3, z3)
       }
     }
-  }
-  def times(multiple: BigInt): HomogeneousPoint[A] = {
+  def times(multiple: BigInt): HomogeneousPoint[A] =
     if (isZero) {
       this
     } else if (y === ZeroA) {
@@ -156,7 +155,6 @@ final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField:
         result
       }
     }
-  }
 
   def toByteVector(implicit h: Hashable[A]): ByteVector = {
     val zInv = Field[A].one / z
@@ -165,12 +163,11 @@ final case class HomogeneousPoint[A] private (x: A, y: A, z: A)(implicit aField:
 
   def isZero: Boolean = z == ZeroA
 
-  def normalize: Option[(A, A)] = {
+  def normalize: Option[(A, A)] =
     if (isZero) {
       None
     } else {
       val zInv = z.reciprocal
       Some((x * zInv, y * zInv))
     }
-  }
 }

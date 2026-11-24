@@ -17,11 +17,11 @@
 
 package com.ironcorelabs.recrypt.internal
 
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
+import com.ironcorelabs.recrypt.internal.Fp480.implicits._
+import com.ironcorelabs.recrypt.syntax.hashable._
 import scodec.bits._
 import spire.algebra.Field
-import Fp.implicits._
-import Fp480.implicits._
-import com.ironcorelabs.recrypt.syntax.hashable._
 
 class FP12ElemTest extends com.ironcorelabs.recrypt.TestBase {
   import Arbitraries._
@@ -31,61 +31,59 @@ class FP12ElemTest extends com.ironcorelabs.recrypt.TestBase {
 
   "square" should {
     "be the same as ^2" in {
-      forAll { (one: FP12Elem[Fp]) => one.square shouldBe one ^ 2 }
-      forAll { (one: FP12Elem[Fp]) => one.square.square shouldBe one ^ 4 }
-      forAll { (one: FP12Elem[Fp]) => one.square.square.square shouldBe one ^ 8 }
+      forAll((one: FP12Elem[Fp]) => one.square shouldBe one ^ 2)
+      forAll((one: FP12Elem[Fp]) => one.square.square shouldBe one ^ 4)
+      forAll((one: FP12Elem[Fp]) => one.square.square.square shouldBe one ^ 8)
     }
 
-    "be the same as times self" in {
-      forAll { (one: FP12Elem[Fp]) => one.square shouldBe one * one }
-    }
+    "be the same as times self" in
+      forAll((one: FP12Elem[Fp]) => one.square shouldBe one * one)
   }
 
   "hashable" should {
     "always roundtrip with BytesDecoder" in {
-      forAll { (one: FP12Elem[Fp]) => FP12Elem.byteDecoderFP12Elem[Fp].decode(one.toHashBytes).value shouldBe one }
-      forAll { (one: FP12Elem[Fp480]) => FP12Elem.byteDecoderFP12Elem[Fp480].decode(one.toHashBytes).value shouldBe one }
+      forAll((one: FP12Elem[Fp]) => FP12Elem.byteDecoderFP12Elem[Fp].decode(one.toHashBytes).value shouldBe one)
+      forAll((one: FP12Elem[Fp480]) => FP12Elem.byteDecoderFP12Elem[Fp480].decode(one.toHashBytes).value shouldBe one)
     }
   }
 
   "inverse" should {
-    "end up in one when times itself" in {
+    "end up in one when times itself" in
       forAll { (one: FP12Elem[Fp]) =>
         whenever(one != fp12Zero) {
           one.inverse * one shouldBe fp12One
         }
       }
-    }
   }
 
   "x - y" should {
-    "be the same as x + y * (-1) " in {
+    "be the same as x + y * (-1) " in
       forAll { (one: FP12Elem[Fp], two: FP12Elem[Fp]) =>
-        val expected = (one - two)
-        val result = one + (two * (Field[FP2Elem[Fp]].one * (-1)))
+        val expected = one - two
+        val result = one + (two * (Field[FP2Elem[Fp]].one * -1))
         result shouldBe expected
       }
-    }
   }
 
   "x ^ (z + zz)" should {
-    "be the same as x ^z * x ^zz for Fp" in {
+    "be the same as x ^z * x ^zz for Fp" in
       forAll { (fp2: FP12Elem[Fp], iRaw: BigInt, jRaw: BigInt) =>
         val (i, j) = (iRaw.abs, jRaw.abs)
         (fp2 ^ i) * (fp2 ^ j) shouldBe fp2 ^ (i + j)
       }
-    }
-    "be the same as x ^z * x ^zz for Fp480" in {
+    "be the same as x ^z * x ^zz for Fp480" in
       forAll { (fp2: FP12Elem[Fp480], iRaw: BigInt, jRaw: BigInt) =>
         val (i, j) = (iRaw.abs, jRaw.abs)
         (fp2 ^ i) * (fp2 ^ j) shouldBe fp2 ^ (i + j)
       }
-    }
   }
   "hashable" should {
     "be known value" in {
       val fp6 = FP6Elem.create(Fp(100), Fp(200), Fp(300), Fp(400), Fp(500), Fp(600))
-      FP12Elem[Fp](fp6, fp6).toHashBytes shouldBe hex"0x000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000000019000000000000000000000000000000000000000000000000000000000000001f40000000000000000000000000000000000000000000000000000000000000258000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000000019000000000000000000000000000000000000000000000000000000000000001f40000000000000000000000000000000000000000000000000000000000000258"
+      FP12Elem[Fp](
+        fp6,
+        fp6
+      ).toHashBytes shouldBe hex"0x000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000000019000000000000000000000000000000000000000000000000000000000000001f40000000000000000000000000000000000000000000000000000000000000258000000000000000000000000000000000000000000000000000000000000006400000000000000000000000000000000000000000000000000000000000000c8000000000000000000000000000000000000000000000000000000000000012c000000000000000000000000000000000000000000000000000000000000019000000000000000000000000000000000000000000000000000000000000001f40000000000000000000000000000000000000000000000000000000000000258"
     }
   }
   "create" should {

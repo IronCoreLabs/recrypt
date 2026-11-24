@@ -17,18 +17,18 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import point.HomogeneousPoint
-import org.typelevel.discipline.Predicate
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
+import com.ironcorelabs.recrypt.internal.Fp480.implicits._
+import com.ironcorelabs.recrypt.internal.point.HomogeneousPoint
 import org.scalacheck.Arbitrary
-import spire.laws.RingLaws
-import Fp.implicits._
-import Fp480.implicits._
-import org.typelevel.discipline.scalatest.FunSuiteDiscipline
 import org.scalatest.funsuite.AnyFunSuite
+import org.typelevel.discipline.Predicate
+import org.typelevel.discipline.scalatest.FunSuiteDiscipline
+import spire.laws.RingLaws
 
 class FieldLawTests extends AnyFunSuite with org.scalatest.prop.Configuration with FunSuiteDiscipline {
   import Arbitraries._
-  //Additive laws permit all elements.
+  // Additive laws permit all elements.
   implicit def pred[A]: Predicate[A] = Predicate.const(true)
   implicit def fp6Arb: Arbitrary[FP6Elem[Fp]] = Arbitrary(fp6Gen[Fp])
   implicit val fp480Arb: Arbitrary[Fp480] = Arbitrary(nonZeroFp480Gen)
@@ -40,7 +40,7 @@ class FieldLawTests extends AnyFunSuite with org.scalatest.prop.Configuration wi
   checkAll("FP6Elem256", RingLaws[FP6Elem[Fp]].field)
   checkAll("FP12Elem256", RingLaws[FP12Elem[Fp]].field)
   checkAll("HomogeneousPoint256", RingLaws[HomogeneousPoint[Fp]].additiveGroup)
-  //Tests on the field instance for Fp480
+  // Tests on the field instance for Fp480
   checkAll("Fp480", RingLaws[Fp480].field)
   checkAll("FP2Elem480", RingLaws[FP2Elem[Fp480]].field)
   checkAll("FP6Elem480", RingLaws[FP6Elem[Fp480]].field)

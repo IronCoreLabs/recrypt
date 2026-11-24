@@ -17,13 +17,13 @@
 
 package com.ironcorelabs.recrypt
 
-import CoreApi.{ reencryptionKeyTransform, transformKeyTransform, privateKeyTransform }
 import cats.syntax.either._
-import syntax.hashable._
+import com.ironcorelabs.recrypt.CoreApi.{privateKeyTransform, reencryptionKeyTransform, transformKeyTransform}
+import com.ironcorelabs.recrypt.syntax.hashable._
 final case class TransformKey(
-  ephemeralPublicKey: PublicKey, //The ephemeral public key who encrypted the value
-  toPublicKey: PublicKey, //The person or device that can decrypt the result
-  encryptedTempKey: EncryptedElement, //The encrypted temp key value, which is used to go from the reencrypted value to the encrypted value
+  ephemeralPublicKey: PublicKey,      // The ephemeral public key who encrypted the value
+  toPublicKey: PublicKey,             // The person or device that can decrypt the result
+  encryptedTempKey: EncryptedElement, // The encrypted temp key value, which is used to go from the reencrypted value to the encrypted value
   hashedTempKey: HashedValue,
   publicSigningKey: PublicSigningKey,
   signature: Signature
@@ -34,15 +34,15 @@ final case class TransformKey(
    */
   def augment(privateKey: PrivateKey): Either[ApiError, TransformKey] = for {
     internalSignedKey <- transformKeyTransform(this).leftMap(InvalidTransformKey(_))
-    //Note that this doesn't screw up the signing because augmentation tweaks the hashedK, which is not part of the
-    //bytes that are used for the signature.
+    // Note that this doesn't screw up the signing because augmentation tweaks the hashedK, which is not part of the
+    // bytes that are used for the signature.
     newSignedValue = internalSignedKey.copy(payload = internalSignedKey.payload.augment(privateKeyTransform(privateKey), TransformKey.g1))
     result <- reencryptionKeyTransform(newSignedValue).leftMap(InvalidTransformKey(_))
   } yield result
 }
 
 object TransformKey {
-  implicit val hashable: Hashable[TransformKey] = Hashable.by { tk: TransformKey =>
+  implicit val hashable: Hashable[TransformKey] = Hashable.by { (tk: TransformKey) =>
     tk.ephemeralPublicKey.toHashBytes ++ tk.toPublicKey.toHashBytes ++ tk.encryptedTempKey.toHashBytes ++
       tk.hashedTempKey.toHashBytes ++ tk.publicSigningKey.toHashBytes
   }

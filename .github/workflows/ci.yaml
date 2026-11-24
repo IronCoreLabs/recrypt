@@ -10,13 +10,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Restore caches
-        uses: coursier/cache-action@v8
+        uses: coursier/cache-action@v9
       - name: Setup Scala
         uses: coursier/setup-action@v3
         with:
           jvm: 21
           apps: sbt
       - name: Run tests
-        run: sbt +compile +test scalastyle
+        # sbt 2 wants one argument with `;` between commands, not a bare list. benchmark gets its own
+        # tasks because the root can't aggregate it (see build.sbt).
+        run: >
+          sbt "+compile; +test; +benchmark/test; +benchmark/Jmh/compile;
+          scalafmtCheckAll; benchmark/scalafmtCheckAll; scalafmtSbtCheck;
+          scalafixAll --check; benchmark/scalafixAll --check"

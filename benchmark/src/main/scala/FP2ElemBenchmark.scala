@@ -1,10 +1,9 @@
 package bench
 
-import java.util.concurrent.TimeUnit
+import com.ironcorelabs.recrypt.internal.{FP2Elem, Fp}
 import org.openjdk.jmh.annotations._
 
-import com.ironcorelabs.recrypt.internal.Fp
-import com.ironcorelabs.recrypt.internal.FP2Elem
+import java.util.concurrent.TimeUnit
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -21,9 +20,8 @@ class FP2ElemBenchmark extends BenchmarkHelper {
   var elements: Vector[FP2Elem[Fp]] = Vector.empty
 
   @Setup
-  def setup(): Unit = {
+  def setup(): Unit =
     elements = Vector.fill(size)(point)
-  }
 
   @Benchmark
   def addingFP2 = elements.foldLeft(point)((acc, p) => acc + p)

@@ -27,7 +27,7 @@ trait ExtensionField[A <: BigInt] {
 
   // Used in frobenius, this is Xi^((p-1)/3)
   // Fp6Elem[A](Fp2Elem.Zero, Fp2Elem.One, Fp2Elem.Zero).frobenius
-  //Xi  ^ ((p - p % 3) /3) because of the prime we've chosen, p % 3 == 1
+  // Xi  ^ ((p - p % 3) /3) because of the prime we've chosen, p % 3 == 1
   def frobeniusFactor1: FP2Elem[A]
 
   // Used in frobenius, this is frobeniusFactor1^2
@@ -37,6 +37,7 @@ trait ExtensionField[A <: BigInt] {
   // q % 3 == 0  -- For our p
   // Xi ^ ((q - q % 3)/3)
   def frobeniusFactorFp12: FP2Elem[A]
+
   /**
    * v is the thing that cubes to xi
    * v^3 = u+3, because by definition it is a solution to the equation y^3 - (u + 3)

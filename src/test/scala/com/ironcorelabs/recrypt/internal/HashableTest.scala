@@ -17,9 +17,9 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import scodec.bits._
 import cats.data.NonEmptyVector
 import com.ironcorelabs.recrypt.syntax.hashable._
+import scodec.bits._
 
 class HashableTest extends com.ironcorelabs.recrypt.TestBase {
   "NonEmptyVector" should {

@@ -18,13 +18,13 @@
 package com.ironcorelabs.recrypt
 
 import cats.effect.IO
-import scodec.bits.ByteVector
-import cats.syntax.either._
-import cats.syntax.traverse._
 import cats.instances.either._
 import cats.instances.list._
+import cats.syntax.either._
+import cats.syntax.traverse._
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
 import com.ironcorelabs.recrypt.syntax.hashable._
-import internal.Fp.implicits._
+import scodec.bits.ByteVector
 
 /**
  * A version of the API that does not have scala specific features in it.
@@ -56,22 +56,25 @@ class CoreApi(
    * Generate a key pair using the randomByteVector to create private keys.
    */
   def generateKeyPair: IO[(PrivateKey, PublicKey)] =
-    privateKeys.map(priv => priv -> publicKeyTransform(publicKeyGen(privateKeyTransform(priv)))
-      .getOrElse(throw new Exception("Public key is always defined for valid private key.")))
+    privateKeys.map(priv =>
+      priv -> publicKeyTransform(publicKeyGen(privateKeyTransform(priv)))
+        .getOrElse(throw new Exception("Public key is always defined for valid private key."))
+    )
 
   /**
    * Compute the public key for the private key, if the privateKey represents an invalid value, raise an error in the IO.
    */
-  def computePublicKey(privateKey: PrivateKey): IO[PublicKey] = IO(publicKeyTransform(publicKeyGen(privateKeyTransform(privateKey)))
-    //Realistically this should never happen because the private key shouldn't contain a value that goes to the zero point.
-    .getOrElse(throw new Exception("privateKey was invalid.")))
+  def computePublicKey(privateKey: PrivateKey): IO[PublicKey] = IO(
+    publicKeyTransform(publicKeyGen(privateKeyTransform(privateKey)))
+      // Realistically this should never happen because the private key shouldn't contain a value that goes to the zero point.
+      .getOrElse(throw new Exception("privateKey was invalid."))
+  )
 
   /**
    * Augment the private key with another. This does addition in Fr instead of Fp so it matches up the cycle of the curve.
    */
-  def augmentPrivateKey(p1: PrivateKey, p2: PrivateKey): PrivateKey = {
+  def augmentPrivateKey(p1: PrivateKey, p2: PrivateKey): PrivateKey =
     PrivateKey(internal.Fp.bigIntToByteVector(internal.positiveMod(privateKeyTransform(p1).toBigInt + privateKeyTransform(p2).toBigInt, internal.Fp.Order)))
-  }
 
   /**
    * Using the randomBytes, generate a random element of G_T, which is one of the rth roots of unit in FP12.
@@ -102,8 +105,8 @@ class CoreApi(
     publicSigningKey: PublicSigningKey,
     privateSigningKey: PrivateSigningKey
   ): IO[EncryptedValue] = for {
-    newTempKey <- generateGTElem
-    privateKey <- randomPrivateKey
+    newTempKey        <- generateGTElem
+    privateKey        <- randomPrivateKey
     transformedResult <- reencrypt(newTempKey, privateKey, encryptedValue, transformKey, publicSigningKey, privateSigningKey).toIO
   } yield transformedResult
 
@@ -121,7 +124,7 @@ class CoreApi(
     publicSigningKey: PublicSigningKey,
     privateSigningKey: PrivateSigningKey
   ): IO[EncryptedValue] = for {
-    privateKey <- randomPrivateKey
+    privateKey      <- randomPrivateKey
     encryptedResult <- encrypt(privateKey, toPublicKey, plaintext, publicSigningKey, privateSigningKey).toIO
   } yield encryptedResult
 
@@ -131,11 +134,10 @@ class CoreApi(
    * @param privateKey - PrivateKey which we want to use to decrypt the EncryptedValue.
    * @return An error if the key didn't match or something was corrupted in the EncryptedValue, otherwise the recovered plaintext.
    */
-  def decrypt(encryptedValue: EncryptedValue, privateKey: PrivateKey): Either[String, Plaintext] = {
+  def decrypt(encryptedValue: EncryptedValue, privateKey: PrivateKey): Either[String, Plaintext] =
     encryptedValueTransform(encryptedValue)
       .flatMap(e => encryptInstance.decrypt(privateKeyTransform(privateKey), e).leftMap(_.toString))
       .map(fp12 => Plaintext(fp12.toHashBytes))
-  }
 
   def deriveSymmetricKey(p: Plaintext): DecryptedSymmetricKey = DecryptedSymmetricKey(sha256(p))
 
@@ -161,7 +163,7 @@ class CoreApi(
     fromPrivateSigningKey: PrivateSigningKey
   ): IO[TransformKey] = for {
     reencryptionPrivateKey <- randomPrivateKey
-    tempKey <- generateGTElem
+    tempKey                <- generateGTElem
     result <- generateTransformKey(fromPrivateKey, toPublicKey, reencryptionPrivateKey, tempKey, fromPublicSigningKey, fromPrivateSigningKey).toIO
   } yield result
 
@@ -177,16 +179,15 @@ class CoreApi(
     privateKey: PrivateKey,
     publicKey: PublicKey,
     message: A
-  ): IO[SchnorrSignature] = {
+  ): IO[SchnorrSignature] =
     //  Generate random values for K and try to sign until we get one that works
     randomFp
       .map(schnorrSigning.sign(privateKeyTransform(privateKey), publicKey.internalKey, message, _, sha256))
       .iterateUntil(_.isDefined)
       .map { maybeSig =>
-        val sig = maybeSig.get //Safe because of above `.isDefined`
+        val sig = maybeSig.get // Safe because of above `.isDefined`
         schnorrSignatureTransform(sig)
       }
-  }
 
   /**
    * Verify that the signature of a message is valid, given the public key that corresponds to the private key that
@@ -205,9 +206,8 @@ class CoreApi(
     augmentingPrivateKey: PrivateKey,
     message: A,
     signature: SchnorrSignature
-  ): Boolean = {
+  ): Boolean =
     schnorrSigning.verify(publicKey.internalKey, privateKeyTransform(augmentingPrivateKey), message, schnorrSignatureTransform(signature), sha256)
-  }
 
   private[recrypt] def generateTransformKey(
     fromPrivateKey: PrivateKey,
@@ -216,7 +216,7 @@ class CoreApi(
     tempKey: internal.FP12Elem[internal.Fp],
     publicSigningKey: PublicSigningKey,
     privateSigningKey: PrivateSigningKey
-  ) = {
+  ) =
     reencryptionKeyTransform(
       encryptInstance.generateReencryptionKey(
         privateKeyTransform(fromPrivateKey),
@@ -227,7 +227,6 @@ class CoreApi(
         privateSigningKey
       )
     )
-  }
 
   private[recrypt] def encrypt(
     ephemeralPrivateKey: PrivateKey,
@@ -250,16 +249,18 @@ class CoreApi(
     publicSigningKey: PublicSigningKey,
     privateSigningKey: PrivateSigningKey
   ) = for {
-    internalTransformKey <- transformKeyTransform(transformKey)
+    internalTransformKey   <- transformKeyTransform(transformKey)
     internalEncryptedValue <- encryptedValueTransform(encryptedValue)
-    reencryptResult <- encryptInstance.reencrypt(
-      internalTransformKey,
-      internalEncryptedValue,
-      privateKeyTransform(newPrivateKey),
-      newTempKey,
-      publicSigningKey,
-      privateSigningKey
-    ).leftMap(_.toString)
+    reencryptResult        <- encryptInstance
+      .reencrypt(
+        internalTransformKey,
+        internalEncryptedValue,
+        privateKeyTransform(newPrivateKey),
+        newTempKey,
+        publicSigningKey,
+        privateSigningKey
+      )
+      .leftMap(_.toString)
     transformedResult <- encryptedValueTransform(reencryptResult)
   } yield transformedResult
 
@@ -267,9 +268,9 @@ class CoreApi(
 
 object CoreApi {
   import internal.BytesDecoder
-  //Transform functions to/from all of types in recrypt's internal types to the Scala exposed types.
-  //Note that in most cases there are 2 methods with the same name, this is because the names here often reflect the names in the
-  //recrypt core.
+  // Transform functions to/from all of types in recrypt's internal types to the Scala exposed types.
+  // Note that in most cases there are 2 methods with the same name, this is because the names here often reflect the names in the
+  // recrypt core.
   private[recrypt] def publicKeyTransform(p: PublicKey) = p.internalKey
   private[recrypt] def publicKeyTransform(p: internal.PublicKey[internal.Fp]) = PublicKey.fromInternal(p)
 
@@ -282,7 +283,7 @@ object CoreApi {
   private[recrypt] def encryptedMessageTransform(fp12: internal.FP12Elem[internal.Fp]): EncryptedMessage = EncryptedMessage(fp12.toHashBytes)
 
   private[recrypt] def reencryptionBlockTransform(r: internal.ReencryptionBlock[internal.Fp]): Either[String, TransformBlock] = for {
-    publicKey <- publicKeyTransform(r.publicKey).toRight("Public key wasn't valid.")
+    publicKey       <- publicKeyTransform(r.publicKey).toRight("Public key wasn't valid.")
     randomPublicKey <- publicKeyTransform(r.randomRePublicKey).toRight("randomPublicKey wasn't valid.")
     result = TransformBlock(
       publicKey,
@@ -296,7 +297,7 @@ object CoreApi {
     val publicKey = publicKeyTransform(r.publicKey)
     val randomPublicKey = publicKeyTransform(r.randomTransformPublicKey)
     for {
-      tempKey <- encryptedValueTransform(r.encryptedTempKey).leftMap(_ => "Invalid encryptedTempKey.")
+      tempKey                         <- encryptedValueTransform(r.encryptedTempKey).leftMap(_ => "Invalid encryptedTempKey.")
       randomTransformEncryptedTempKey <- encryptedValueTransform(r.randomTransformEncryptedTempKey)
         .leftMap(_ => "Invalid randomTransformEncryptedTempKey")
     } yield internal.ReencryptionBlock(
@@ -307,19 +308,19 @@ object CoreApi {
     )
   }
 
-  private[recrypt] def transformedValueTransform(t: TransformedValue): Either[String, internal.SignedValue[internal.EncryptedValue[internal.Fp]]] = {
+  private[recrypt] def transformedValueTransform(t: TransformedValue): Either[String, internal.SignedValue[internal.EncryptedValue[internal.Fp]]] =
     for {
       fp12 <- BytesDecoder[internal.FP12Elem[internal.Fp]].decode(t.encryptedMessage.bytes).leftMap(_ => "Payload of 'encryptedMessage' could not be converted")
       ephemeralPublicKey = publicKeyTransform(t.ephemeralPublicKey)
       authHash = t.authHash
       reencryptionBlocks <- t.transformBlocks.traverse(transformBlockTransform)
     } yield internal.SignedValue(t.publicSigningKey, t.signature, internal.ReencryptedValue(ephemeralPublicKey, fp12, authHash, reencryptionBlocks))
-  }
 
   private[recrypt] def encryptedValueTransform(e: EncryptedValue): Either[String, internal.SignedValue[internal.EncryptedValue[internal.Fp]]] = e match {
     case e: EncryptedOnceValue =>
       for {
-        fp12 <- BytesDecoder[internal.FP12Elem[internal.Fp]].decode(e.encryptedMessage.bytes)
+        fp12 <- BytesDecoder[internal.FP12Elem[internal.Fp]]
+          .decode(e.encryptedMessage.bytes)
           .leftMap(_ => "Payload of 'encryptedMessage' could not be converted")
         ephemeralPublicKey = publicKeyTransform(e.ephemeralPublicKey)
         authHash = e.authHash
@@ -334,9 +335,9 @@ object CoreApi {
         .map(key => EncryptedOnceValue(key, EncryptedMessage(once.encryptedMessage.toHashBytes), authHash, e.publicSigningKey, e.signature))
         .toRight("Invalid ephemeralPublicKey")
     },
-    { reencrypted =>
+    reencrypted =>
       for {
-        key <- publicKeyTransform(reencrypted.ephemeralPublicKey).toRight("Invalid ephemeralPublicKey.")
+        key             <- publicKeyTransform(reencrypted.ephemeralPublicKey).toRight("Invalid ephemeralPublicKey.")
         transformBlocks <- reencrypted.encryptionBlocks.traverse(reencryptionBlockTransform)
       } yield TransformedValue(
         key,
@@ -346,7 +347,6 @@ object CoreApi {
         e.publicSigningKey,
         e.signature
       )
-    }
   )
 
   private[recrypt] def encryptedValueTransform(tempKey: internal.FP12Elem[internal.Fp]) = EncryptedElement(tempKey.toHashBytes)

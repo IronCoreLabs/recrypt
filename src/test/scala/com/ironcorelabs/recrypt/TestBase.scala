@@ -17,17 +17,9 @@
 
 package com.ironcorelabs.recrypt
 
-import org.scalatest.{ BeforeAndAfterAll, OptionValues }
-import cats.scalatest.EitherValues
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterAll, EitherValues, OptionValues}
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-abstract class TestBase
-  extends AnyWordSpec
-  with Matchers
-  with OptionValues
-  with BeforeAndAfterAll
-  with ScalaCheckDrivenPropertyChecks
-  with EitherValues {
-}
+abstract class TestBase extends AnyWordSpec with Matchers with OptionValues with BeforeAndAfterAll with ScalaCheckDrivenPropertyChecks with EitherValues {}

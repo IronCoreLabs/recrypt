@@ -17,10 +17,10 @@
 
 package com.ironcorelabs.recrypt
 
-import scodec.bits.ByteVector
-import CoreApi.publicKeyTransform
 import cats.syntax.either._
-import internal.Fp.implicits._
+import com.ironcorelabs.recrypt.CoreApi.publicKeyTransform
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
+import scodec.bits.ByteVector
 
 /**
  * Public key which can be encrypted to. Ideally this would just be the internal
@@ -29,6 +29,7 @@ import internal.Fp.implicits._
  * This is guarenteed to be a valid point on the curve by construction.
  */
 sealed abstract case class PublicKey(x: ByteVector, y: ByteVector) {
+
   /**
    * Augment the public key with another PublicKey. The augmented public key will be the one that is used for any encryption.
    * Note that if a public key has been augmented, any TransformKeys that are created to delegate decryption from that key
@@ -43,7 +44,7 @@ sealed abstract case class PublicKey(x: ByteVector, y: ByteVector) {
 }
 
 object PublicKey {
-  implicit val hashable: Hashable[PublicKey] = Hashable.by { pk: PublicKey => pk.x ++ pk.y }
+  implicit val hashable: Hashable[PublicKey] = Hashable.by((pk: PublicKey) => pk.x ++ pk.y)
 
   def apply(x: ByteVector, y: ByteVector): Either[ApiError, PublicKey] =
     internal.PublicKey.fromByteVectors(x, y).leftMap(_ => InvalidPublicKey).map(internalPK => new PublicKey(x, y) { val internalKey = internalPK })
@@ -51,7 +52,7 @@ object PublicKey {
   /**
    * Private to the package so we don't expose the internal public key in the public methods.
    */
-  private[recrypt] def fromInternal(p: internal.PublicKey[internal.Fp]): Option[PublicKey] = p.toByteVectors.map {
-    case (publicX, publicY) => new PublicKey(publicX, publicY) { val internalKey = p }
+  private[recrypt] def fromInternal(p: internal.PublicKey[internal.Fp]): Option[PublicKey] = p.toByteVectors.map { case (publicX, publicY) =>
+    new PublicKey(publicX, publicY) { val internalKey = p }
   }
 }

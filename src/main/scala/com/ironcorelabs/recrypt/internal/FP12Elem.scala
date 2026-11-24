@@ -17,10 +17,10 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import spire.algebra.Field
 import cats.kernel.Eq
-import spire.implicits._
 import cats.syntax.contravariant._
+import spire.algebra.Field
+import spire.implicits._
 
 /**
  * An element of the degree 12 extension of our base finite field Fp. The degree 12 extension is formed on
@@ -46,10 +46,10 @@ final case class FP12Elem[A <: BigInt: ExtensionField: Field](elem1: FP6Elem[A],
     FP12Elem[A](newFp1, newFp2)
   }
 
-  def unary_- : FP12Elem[A] = FP12Elem[A](-elem1, -elem2) //scalastyle:ignore method.name
+  def unary_- : FP12Elem[A] = FP12Elem[A](-elem1, -elem2)
 
   def inverse: FP12Elem[A] = {
-    //Algorithm 5.19 of El Mrabet--Joye 2017 "Guide to Pairing-Based Cryptography."
+    // Algorithm 5.19 of El Mrabet--Joye 2017 "Guide to Pairing-Based Cryptography."
     val (b, a) = (elem1, elem2)
     val v0 = a.square
     val v1 = b.square
@@ -89,7 +89,7 @@ final case class FP12Elem[A <: BigInt: ExtensionField: Field](elem1: FP6Elem[A],
     FP12Elem[A](y1, y0)
   }
 
-  def ^(power: BigInt): FP12Elem[A] = {
+  def ^(power: BigInt): FP12Elem[A] =
     if (power == BigIntZero) {
       Field[FP12Elem[A]].one
     } else if (this == Field[FP12Elem[A]].zero) {
@@ -98,17 +98,15 @@ final case class FP12Elem[A <: BigInt: ExtensionField: Field](elem1: FP6Elem[A],
       throw new Exception("Fp12 elements cannot be taken to negative powers.")
     } else {
       val bits = scodec.bits.BitVector(power.toByteArray).toIndexedSeq.dropWhile(!_)
-      bits.foldLeft(Field[FP12Elem[A]].one) {
-        case (cur, bit) =>
-          val squareResult = cur.square
-          if (bit) squareResult * this else squareResult
+      bits.foldLeft(Field[FP12Elem[A]].one) { case (cur, bit) =>
+        val squareResult = cur.square
+        if (bit) squareResult * this else squareResult
       }
     }
-  }
 
   def conjugate: FP12Elem[A] = FP12Elem[A](-elem1, elem2)
 
-  //This is the element to the p power.
+  // This is the element to the p power.
   def frobenius: FP12Elem[A] = {
     val a = elem1.frobenius
     val b = elem2.frobenius
@@ -124,19 +122,30 @@ final case class FP12Elem[A <: BigInt: ExtensionField: Field](elem1: FP6Elem[A],
 
   def toFP2: Option[FP2Elem[A]] = elem2.toFP2
 
-  override def toString: String = {
+  override def toString: String =
     s"(($elem1) * w + ($elem2))"
-  }
 }
 
 object FP12Elem {
-  def create[A <: BigInt: ExtensionField: Field: ModsByPrime](fp1: A, fp2: A, fp3: A, fp4: A, //scalastyle:ignore parameter.number - Need to take all 12.
-    fp5: A, fp6: A, fp7: A, fp8: A, fp9: A, fp10: A, fp11: A, fp12: A): FP12Elem[A] = FP12Elem[A](
+  def create[A <: BigInt: ExtensionField: Field: ModsByPrime](
+    fp1: A,
+    fp2: A,
+    fp3: A,
+    fp4: A,
+    fp5: A,
+    fp6: A,
+    fp7: A,
+    fp8: A,
+    fp9: A,
+    fp10: A,
+    fp11: A,
+    fp12: A
+  ): FP12Elem[A] = FP12Elem[A](
     FP6Elem.create[A](fp1, fp2, fp3, fp4, fp5, fp6),
     FP6Elem.create[A](fp7, fp8, fp9, fp10, fp11, fp12)
   )
 
-  implicit def field[A <: BigInt: ExtensionField: Field: ModsByPrime]: Field[FP12Elem[A]] = new Field.WithDefaultGCD[FP12Elem[A]] {
+  implicit def field[A <: BigInt: ExtensionField: Field: ModsByPrime]: Field[FP12Elem[A]] = new Field[FP12Elem[A]] {
     val fp6Zero = Field[FP6Elem[A]].zero
     def negate(x: FP12Elem[A]): FP12Elem[A] = -x
     val zero: FP12Elem[A] = FP12Elem[A](fp6Zero, fp6Zero)
@@ -146,9 +155,8 @@ object FP12Elem {
     val one: FP12Elem[A] = FP12Elem[A](fp6Zero, Field[FP6Elem[A]].one)
   }
 
-  implicit def eq[A <: BigInt: Eq]: Eq[FP12Elem[A]] = Eq.instance {
-    case (FP12Elem(one, two), FP12Elem(onePrime, twoPrime)) =>
-      one === onePrime && two === twoPrime
+  implicit def eq[A <: BigInt: Eq]: Eq[FP12Elem[A]] = Eq.instance { case (FP12Elem(one, two), FP12Elem(onePrime, twoPrime)) =>
+    one === onePrime && two === twoPrime
   }
 
   implicit def hashable[A <: BigInt: Hashable]: Hashable[FP12Elem[A]] =
@@ -164,7 +172,8 @@ object FP12Elem {
   implicit def byteDecoderFP12Elem[A <: BigInt: ModsByPrime](implicit
     readFp6A: BytesDecoder[FP6Elem[A]],
     fieldA: Field[A],
-    primeFieldA: ExtensionField[A]): BytesDecoder[FP12Elem[A]] = BytesDecoder.forSize(readFp6A.acceptableSize * 2) { b =>
+    primeFieldA: ExtensionField[A]
+  ): BytesDecoder[FP12Elem[A]] = BytesDecoder.forSize(readFp6A.acceptableSize * 2) { b =>
     val (first, second) = b.splitAt(b.length / 2)
     for {
       elem1 <- readFp6A.decode(first)

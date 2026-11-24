@@ -17,8 +17,8 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import spire.implicits._
 import spire.algebra.Field
+import spire.implicits._
 
 /**
  * This type represents the infomation to configure the pairing for a particular FpType.
@@ -34,11 +34,13 @@ abstract class PairingConfig[FpType <: BigInt] {
     val z2 = z * extension.xi + 1
     FP12Elem[FpType](a2, FP6Elem(y, x, z2))
   }
+
   /**
    * raising of the fp12 to the cuberoot of the BNParam for FpType.
    * This is usually a hand optimized version of the square and multiply.
    */
   def bnPow(fp12: FP12Elem[FpType]): FP12Elem[FpType]
+
   /**
    * The naf which is used for the miller loop. In both our cases it's the NAF of 6*BNParam + 2 reversed with the last 2 dropped off.
    */

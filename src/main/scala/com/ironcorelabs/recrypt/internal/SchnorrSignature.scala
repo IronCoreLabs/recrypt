@@ -17,27 +17,28 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import spire.algebra.Field
-import spire.implicits._
 import cats.Eq
 import scodec.bits.ByteVector
+import spire.algebra.Field
+import spire.implicits._
 
 //  Both r and s will be positive values less than the order that was used to produce it.
 //  r will be greater than zero.
 final case class SchnorrSignature(r: BigInt, s: BigInt)
 
 class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.HomogeneousPoint[B], order: BigInt, frByteSize: Long)(implicit mods: ModsByPrime[B]) {
-  //Defining this locally as it's possibly not what some people would want.
-  //We want to drop all the leading 0s and ensure that the value is padded to the correct length for Fr.
+  // Defining this locally as it's possibly not what some people would want.
+  // We want to drop all the leading 0s and ensure that the value is padded to the correct length for Fr.
   implicit val hashableBigInt: Hashable[BigInt] = Hashable.by(bigIntToByteVector)
   private def bigIntToByteVector(b: BigInt): ByteVector = {
     val zeroByte = 0.toByte
     val byteVector = ByteVector.view(b.toByteArray)
-    //Drop the leading zero if there is one (Because this value is positive.) Then make sure that the
-    //byteVector is padded out to frByteSize
+    // Drop the leading zero if there is one (Because this value is positive.) Then make sure that the
+    // byteVector is padded out to frByteSize
     byteVector.dropWhile(_ == zeroByte).padLeft(frByteSize)
   }
   val publicKeyGen = PublicKeyGen(generator)
+
   /**
    * Sign a message using our PRE privateKey. Also requires the corresponding (augmented) public key, which is
    * included in the hash in order to prevent forgery attacks.
@@ -56,7 +57,7 @@ class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.Homogene
     message: A,
     k: BigInt,
     sha256: Sha256Hash
-  ): Option[SchnorrSignature] = {
+  ): Option[SchnorrSignature] =
     if (k >= order) {
       // If g * k == the zero point, return None. This will only happen if (k mod Curve.Order) == 0
       // Also reject any values for k that are larger than Curve.Order. Though they would wrap around,
@@ -64,22 +65,19 @@ class SchnorrSigning[B <: BigInt: Eq: Hashable: Field](generator: point.Homogene
       // to handle a return of None, just do that for any k >= Curve.Order, and let the caller retry.
       None
     } else {
-      generator.times(k).normalize.flatMap {
-        case (px, _) => {
-          val r = positiveMod(px, order)
-          if (r == BigIntZero)
-            // Also need caller to try agian if we end up with a non-zero point that happens to have (x mod Curve.Order) == 0
-            None
-          else {
-            //Create a value that's bigger than the Fp or Fp480 so either one will have a sufficiently large h
-            val h = mods.create(sha256((r, publicKey, message)) ++ sha256((publicKey, message, r)))
-            val s = positiveMod(k - h * privateKey.fp, order)
-            Some(SchnorrSignature(r, s))
-          }
+      generator.times(k).normalize.flatMap { case (px, _) =>
+        val r = positiveMod(px, order)
+        if (r == BigIntZero)
+          // Also need caller to try agian if we end up with a non-zero point that happens to have (x mod Curve.Order) == 0
+          None
+        else {
+          // Create a value that's bigger than the Fp or Fp480 so either one will have a sufficiently large h
+          val h = mods.create(sha256((r, publicKey, message)) ++ sha256((publicKey, message, r)))
+          val s = positiveMod(k - h * privateKey.fp, order)
+          Some(SchnorrSignature(r, s))
         }
       }
     }
-  }
 
   /**
    * Verify that signature of the message is valid using public key. This is complicated by the fact that the public
