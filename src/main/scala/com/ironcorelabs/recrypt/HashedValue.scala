@@ -17,8 +17,8 @@
 
 package com.ironcorelabs.recrypt
 
-import scodec.bits.ByteVector
 import cats.syntax.either._
+import scodec.bits.ByteVector
 
 /**
  * A value (which is a point on the elliptic curve in the extension field) and is valid by construction.
@@ -32,9 +32,12 @@ object HashedValue {
 
   def apply(bytes: ByteVector): Either[ApiError, HashedValue] = {
     import internal.Fp.implicits._
-    internal.point.HomogeneousPoint.fromXYByteVectorOnTwistedCurve(bytes).leftMap[ApiError] {
-      case internal.PointNotOnCurve(_, _) => InvalidHashedValue("HashedValue was not a valid point on the curve.")
-      case internal.InvalidCoordinate(_, _) => InvalidHashedValue("HashedValue was not the correct length.")
-    }.map(iPoint => new HashedValue(iPoint.toByteVector) { val internalPoint = iPoint })
+    internal.point.HomogeneousPoint
+      .fromXYByteVectorOnTwistedCurve(bytes)
+      .leftMap[ApiError] {
+        case internal.PointNotOnCurve(_, _)   => InvalidHashedValue("HashedValue was not a valid point on the curve.")
+        case internal.InvalidCoordinate(_, _) => InvalidHashedValue("HashedValue was not the correct length.")
+      }
+      .map(iPoint => new HashedValue(iPoint.toByteVector) { val internalPoint = iPoint })
   }
 }

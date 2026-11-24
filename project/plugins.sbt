@@ -1,15 +1,8 @@
-addSbtPlugin("org.scalastyle"           %% "scalastyle-sbt-plugin" % "1.0.0")
-addSbtPlugin("org.scalariform"           % "sbt-scalariform"       % "1.8.3")
-addSbtPlugin("org.scoverage"             % "sbt-scoverage"         % "2.4.4")
-addSbtPlugin("com.github.sbt"            % "sbt-release"           % "1.6.0")
-addSbtPlugin("com.github.sbt"            % "sbt-jmh"               % "0.4.9")
-addSbtPlugin("com.github.sbt"            % "sbt-pgp"               % "2.4.0")
-addSbtPlugin("com.github.sbt"            % "sbt-header"            % "5.11.0")
-addSbtPlugin("org.xerial.sbt"            % "sbt-sonatype"          % "3.12.2")
-addSbtPlugin("org.typelevel"             % "sbt-tpolecat"          % "0.5.7")
-
-// workaround for conflict between sbt-scoverage and scalastyle-sbt-plugin
-// https://github.com/scala/bug/issues/12632
-ThisBuild / libraryDependencySchemes ++= Seq(
-  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
-)
+addSbtPlugin("org.scalameta"  % "sbt-scalafmt"  % "2.6.2")
+addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"  % "0.14.10")
+addSbtPlugin("org.scoverage"  % "sbt-scoverage" % "2.4.4")
+addSbtPlugin("com.github.sbt" % "sbt-release"   % "1.6.0")
+addSbtPlugin("com.github.sbt" % "sbt-jmh"       % "0.4.9")
+addSbtPlugin("com.github.sbt" % "sbt-pgp"       % "2.4.0")
+addSbtPlugin("com.github.sbt" % "sbt-header"    % "5.11.0")
+addSbtPlugin("org.typelevel"  % "sbt-tpolecat"  % "0.5.7")

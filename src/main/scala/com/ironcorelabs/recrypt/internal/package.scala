@@ -18,6 +18,7 @@
 package com.ironcorelabs.recrypt
 
 import cats.data.NonEmptyVector
+
 /**
  * Internal is a namespace that houses all the internal types and algorithms for the implementation. This is not meant to be
  * used by public consumers of recrypt.
@@ -53,7 +54,7 @@ package object internal {
   def gcde(a: BigInt, b: BigInt): (BigInt, BigInt, BigInt) = {
     @annotation.tailrec
     def f(t: (BigInt, BigInt, BigInt), t1: (BigInt, BigInt, BigInt)): (BigInt, BigInt, BigInt) = (t, t1) match {
-      case (t, (BigIntZero, _, _)) => t
+      case (t, (BigIntZero, _, _))          => t
       case ((a1, sa, ta), t @ (b1, sb, tb)) =>
         val (q, r) = divMod(a1, b1)
         f(t, (r, sa - (q * sb), ta - (q * tb)))
@@ -77,12 +78,12 @@ package object internal {
    * @return - Immutable vector which represents the NAF of value.
    */
   def createNAF(value: BigInt): Vector[Int] = {
-    //Mutable collection which has all 0s in it.
+    // Mutable collection which has all 0s in it.
     val naf = scala.collection.mutable.IndexedSeq.fill(nbits(value) + 1)(0)
     var i = 0
     var n = value
 
-    while (n > 0) {
+    while (n > 0)
       if (n % BigIntTwo != 0) {
         naf(i) = (BigIntTwo - (n % BigIntFour)).toInt
         n -= naf(i)
@@ -90,11 +91,10 @@ package object internal {
         n /= BigIntTwo
         i += 1
       }
-    }
     naf.toVector
   }
 
-  //We assume the byteVector is meant to represent a positive integer.
+  // We assume the byteVector is meant to represent a positive integer.
   def byteVectorToBigInt(b: scodec.bits.ByteVector): BigInt = BigInt((0.toByte +: b).toArray)
 
   /**

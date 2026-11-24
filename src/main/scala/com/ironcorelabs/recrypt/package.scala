@@ -20,7 +20,7 @@ package com.ironcorelabs
 import cats.effect.IO
 
 package object recrypt {
-  //Re export some of the types
+  // Re export some of the types
   type PrivateSigningKey = internal.PrivateSigningKey
   val PrivateSigningKey = internal.PrivateSigningKey
 

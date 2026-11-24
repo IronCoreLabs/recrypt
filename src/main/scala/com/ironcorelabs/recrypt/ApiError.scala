@@ -22,4 +22,3 @@ sealed abstract class ApiError
 case object InvalidPublicKey extends ApiError
 final case class InvalidTransformKey(message: String) extends ApiError
 final case class InvalidHashedValue(message: String) extends ApiError
-

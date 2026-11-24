@@ -25,16 +25,16 @@ import scodec.bits.ByteVector
  * transformed (delegated) to another person then it'll be a TransformedValue.
  */
 sealed abstract class EncryptedValue {
-  def ephemeralPublicKey: PublicKey //Public key corresponding to secret key that was used to encrypt the symmetricKey
-  def encryptedMessage: EncryptedMessage //The encrypted plaintext
+  def ephemeralPublicKey: PublicKey      // Public key corresponding to secret key that was used to encrypt the symmetricKey
+  def encryptedMessage: EncryptedMessage // The encrypted plaintext
   def authHash: AuthHash
   def publicSigningKey: PublicSigningKey
   def signature: Signature
 }
 
 final case class TransformedValue(
-  ephemeralPublicKey: PublicKey, //Public key which was used to produce the encryptedMessage
-  encryptedMessage: EncryptedMessage, //The encrypted plaintext
+  ephemeralPublicKey: PublicKey,      // Public key which was used to produce the encryptedMessage
+  encryptedMessage: EncryptedMessage, // The encrypted plaintext
   authHash: AuthHash,
   transformBlocks: NonEmptyVector[TransformBlock],
   publicSigningKey: PublicSigningKey,
@@ -42,8 +42,8 @@ final case class TransformedValue(
 ) extends EncryptedValue
 
 final case class EncryptedOnceValue(
-  ephemeralPublicKey: PublicKey, //Public key which was used to produce the encryptedMessage
-  encryptedMessage: EncryptedMessage, //The encrypted plaintext
+  ephemeralPublicKey: PublicKey,      // Public key which was used to produce the encryptedMessage
+  encryptedMessage: EncryptedMessage, // The encrypted plaintext
   authHash: AuthHash,
   publicSigningKey: PublicSigningKey,
   signature: Signature
@@ -53,7 +53,7 @@ final case class TransformBlock(
   publicKey: PublicKey, // Public key corresponding to private key used to encrypt the temp key
   encryptedTempKey: EncryptedElement,
   randomTransformPublicKey: PublicKey, // The public key corresponding to the private key used to encrypt the random re-encryption element
-  //The encrypted temp key value, which is used to go from the reencrypted value to the encrypted value
+  // The encrypted temp key value, which is used to go from the reencrypted value to the encrypted value
   randomTransformEncryptedTempKey: EncryptedElement
 )
 

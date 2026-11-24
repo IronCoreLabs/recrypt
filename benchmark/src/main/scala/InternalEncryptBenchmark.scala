@@ -1,11 +1,11 @@
 package bench
 
-import java.util.concurrent.TimeUnit
-import org.openjdk.jmh.annotations._
-
-import com.ironcorelabs.recrypt.internal._
-import scodec.bits.ByteVector
 import cats.effect.unsafe.implicits.global
+import com.ironcorelabs.recrypt.internal._
+import org.openjdk.jmh.annotations._
+import scodec.bits.ByteVector
+
+import java.util.concurrent.TimeUnit
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -13,7 +13,7 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
   import Fp.implicits._
   private val keyGen = Fp.curvePoints.publicKeyGen
   val encryptInstance = new InternalApi(
-    Sha256Hash { bytes: ByteVector =>
+    Sha256Hash { (bytes: ByteVector) =>
       ByteVector.view(java.security.MessageDigest.getInstance("SHA-256").digest(bytes.toArray))
     },
     Ed25519Signing((_, _) => Signature.empty, (_, _, _) => true),
@@ -39,8 +39,8 @@ class InternalEncryptBenchmark extends BenchmarkHelper {
     publicSigningKey,
     privateSigningKey
   )
-  private val reencryptedValue = encryptInstance.reencrypt(reencryptionKey, encryptedData,
-    raRePrivateKey, raReK, publicSigningKey, privateSigningKey).toOption.get
+  private val reencryptedValue =
+    encryptInstance.reencrypt(reencryptionKey, encryptedData, raRePrivateKey, raReK, publicSigningKey, privateSigningKey).toOption.get
 
   @Benchmark
   def generatePublicKey = keyGen(privateKey)

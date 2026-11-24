@@ -16,11 +16,11 @@
  */
 
 package com.ironcorelabs.recrypt.internal
-import spire.algebra.Field
-import point.HomogeneousPoint
-import cats.data.NonEmptyVector
 import cats.Eq
+import cats.data.NonEmptyVector
 import cats.implicits._
+import com.ironcorelabs.recrypt.internal.point.HomogeneousPoint
+import spire.algebra.Field
 import spire.implicits._
 
 /**
@@ -31,7 +31,8 @@ import spire.implicits._
 class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: PairingConfig](
   hashFunc: Sha256Hash,
   ed25519Signing: Ed25519Signing,
-  curvePoints: CurvePoints[FpType])(implicit mods: ModsByPrime[FpType]) {
+  curvePoints: CurvePoints[FpType]
+)(implicit mods: ModsByPrime[FpType]) {
   type ErrorOr[A] = Either[EncryptError, A]
 
   private[this] val OneByte = 1.toByte
@@ -92,8 +93,9 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
       goodEncryptedValue <- verifySignedValue(signedEncryptedValue).toRight(SignatureFailed(signedEncryptedValue))
       unverifiedPlaintext = goodEncryptedValue.fold(decryptEncryptedOnce(privateKey, _), decryptReencryptedValue(privateKey, _))
       computedAuthHash = AuthHash.create(hashFunc, goodEncryptedValue.ephemeralPublicKey, unverifiedPlaintext)
-      result <- if (goodEncryptedValue.authHash != computedAuthHash) AuthHashMatchFailed(signedEncryptedValue).asLeft
-      else unverifiedPlaintext.asRight
+      result <-
+        if (goodEncryptedValue.authHash != computedAuthHash) AuthHashMatchFailed(signedEncryptedValue).asLeft
+        else unverifiedPlaintext.asRight
     } yield result
 
   /**
@@ -104,7 +106,7 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
    */
   final private[internal] def decryptEncryptedOnce(privateKey: PrivateKey[FpType], encryptedValue: EncryptedOnceValue[FpType]): FP12Elem[FpType] = {
     val EncryptedOnceValue(ephemPubKey, encryptedMessage, _) = encryptedValue
-    //This is because
+    // This is because
     // m*pair(P,Q)*pair(P,-Q) = m*pair(P,Q)*pair(P,Q)^(-1)  = m
     val maybePlaintext = encryptedMessage * pair(ephemPubKey.value.negate.times(privateKey.toBigInt), g1)
     maybePlaintext
@@ -155,19 +157,17 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
     raReK: FP12Elem[FpType],
     publicSigningKey: PublicSigningKey,
     privateSigningKey: PrivateSigningKey
-  ): ErrorOr[SignedValue[EncryptedValue[FpType]]] = {
+  ): ErrorOr[SignedValue[EncryptedValue[FpType]]] =
     (
       verifySignedValue(signedEncryptedValue).toRight(SignatureFailed(signedEncryptedValue)),
       verifySignedValue(signedReencryptionKey).toRight(ReencryptionKeyIsCorrupt(signedReencryptionKey))
     ).mapN { (encryptedValue, reencryptionKey) =>
-        val reencryptedValue: EncryptedValue[FpType] = encryptedValue.fold[EncryptedValue[FpType]](
-          reencryptEncryptedOnce(reencryptionKey, _, raRePriKey, raReK),
-          reencryptReencryptedValue(reencryptionKey, _, raRePriKey, raReK)
-        )
-        signValue(reencryptedValue, publicSigningKey, privateSigningKey)
-      }
-
-  }
+      val reencryptedValue: EncryptedValue[FpType] = encryptedValue.fold[EncryptedValue[FpType]](
+        reencryptEncryptedOnce(reencryptionKey, _, raRePriKey, raReK),
+        reencryptReencryptedValue(reencryptionKey, _, raRePriKey, raReK)
+      )
+      signValue(reencryptedValue, publicSigningKey, privateSigningKey)
+    }
 
   /**
    * Verifies the Ed25519 signature on a signed value.
@@ -239,7 +239,7 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
     // The algorithm specifies that we should operate on the last element of the reencryptionBlocks
     val reencryptionBlockL = reencryptionBlocks.toVector.last
     // Here anything that is suffixed with `L` means it was a member of the last element
-    val ReencryptionBlock(reencryptionPubKeyL, encryptedKL, randomReencryptionPubKeyL, randomReencryptionEncryptedKL) = reencryptionBlockL //scalastyle:ignore
+    val ReencryptionBlock(reencryptionPubKeyL, encryptedKL, randomReencryptionPubKeyL, randomReencryptionEncryptedKL) = reencryptionBlockL
 
     val encryptedKPrimel = encryptedKL * pair(reencryptionPubKeyL.value, hashedK) // re-encrypted K
     val randomReencryptionPubKey = publicKeyGen(randomReencryptionPriKey)
@@ -247,7 +247,8 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
     // Modify the random rencryptionEncryptedK with the new randomReencryptionK
     val randomReencryptionKLPrime = randomReencryptionEncryptedKL * pair(randomReencryptionPubKeyL.value, hash2(randomReencryptionTempKey).add(hashedK))
     val reencryptionBlockLPrime = reencryptionBlockL.withNewTempKey(encryptedKPrimel, randomReencryptionKLPrime)
-    val newReencryptionBlock = ReencryptionBlock(reencryptionPublicKey, encryptedTempKey, randomReencryptionPubKey, randomReencryptionEncryptedTempKey) //scalastyle:ignore
+    val newReencryptionBlock =
+      ReencryptionBlock(reencryptionPublicKey, encryptedTempKey, randomReencryptionPubKey, randomReencryptionEncryptedTempKey)
     // Because we modified the last block, replace it and append the new block as well.
     val newBlocksVector = fromVectorAndNonEmpty(reencryptionBlocks.toVector.init, NonEmptyVector.of(reencryptionBlockLPrime, newReencryptionBlock))
     reencryptedValue.copy(encryptionBlocks = newBlocksVector)
@@ -262,15 +263,17 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
   final private[internal] def decryptReencryptedValue(privateKey: PrivateKey[FpType], reencryptedValue: ReencryptedValue[FpType]): FP12Elem[FpType] =
     reencryptedValue.encryptionBlocks match {
       case encryptionBlocks =>
-        //Here anything that is suffixed with `L` means it was a member of the last element
+        // Here anything that is suffixed with `L` means it was a member of the last element
         val reencryptionBlockL = encryptionBlocks.toVector.last
         val ReencryptionBlock(rePubKeyl, encryptedKl, raRePubKeyl, raReEncKl) = reencryptionBlockL
         val secondToLastK = encryptedKl * pair(rePubKeyl.value.negate.times(privateKey.toBigInt), g1)
         val secondToLastRandomReencryptionK = raReEncKl * pair(raRePubKeyl.value.negate.times(privateKey.toBigInt), g1)
-        //We're going through the list backwards because we unravel the reencryption blocks from last to first, the last one is special so it's done first.
+        // We're going through the list backwards because we unravel the reencryption blocks from last to first, the last one is special so it's done first.
         val (firstK, firstRandomReencryptionK) = encryptionBlocks.toVector.reverse.tail.foldLeft((secondToLastK, secondToLastRandomReencryptionK)) {
-          case ((currentK, currentRandomReencryptionK),
-            ReencryptionBlock(nextReencryptionPubKey, nextEncryptedK, nextRandomReencryptionPubKey, nextRandomReencryptionK)) =>
+          case (
+                (currentK, currentRandomReencryptionK),
+                ReencryptionBlock(nextReencryptionPubKey, nextEncryptedK, nextRandomReencryptionPubKey, nextRandomReencryptionK)
+              ) =>
             val currentKHash = hash2(currentK)
             val nextK = nextEncryptedK * pair(nextReencryptionPubKey.value.negate, currentKHash)
             val nextRandomReencyptionK = nextRandomReencryptionK * pair(
@@ -289,10 +292,9 @@ class InternalApi[FpType <: BigInt: Hashable: Field: ExtensionField: Eq: Pairing
    * @return a point in G1, in homogeneous coordinates.
    */
   final def hash2(fp12: FP12Elem[FpType]): HomogeneousPoint[FP2Elem[FpType]] = {
-    //Produce a 512 bit byte vector, which ensures we have a big enough value for 480 and Fp
-    //We use a constant value combined with the entire fp12 element so we don't leak information about the fp12 structure.
+    // Produce a 512 bit byte vector, which ensures we have a big enough value for 480 and Fp
+    // We use a constant value combined with the entire fp12 element so we don't leak information about the fp12 structure.
     val bytes = hashFunc((ZeroByte, fp12)) ++ hashFunc((OneByte, fp12))
-    hashElement.times(mods.create(bytes)) //Multiplation, which will always occur times the appropriate modded Fp element.
+    hashElement.times(mods.create(bytes)) // Multiplation, which will always occur times the appropriate modded Fp element.
   }
 }
-

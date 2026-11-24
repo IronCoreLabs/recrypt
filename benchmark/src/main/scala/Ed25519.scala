@@ -3,21 +3,22 @@
  */
 package bench
 
-import org.bouncycastle.crypto.params.{ Ed25519PrivateKeyParameters, Ed25519PublicKeyParameters }
+import org.bouncycastle.crypto.params.{Ed25519PrivateKeyParameters, Ed25519PublicKeyParameters}
 import org.bouncycastle.crypto.signers.Ed25519Signer
 import scodec.bits.ByteVector
 
 /**
  * Functions and types for working with the ed25519 signature.
  */
-object Ed25519 { //scalastyle:ignore
+object Ed25519 {
+
   /**
    * An Ed25519 Public Key, which always has the correct length, can be used in `verify`
    */
   sealed abstract case class PublicKey(bytes: ByteVector) {
     override def toString: String = s"Ed25519.PublicKey as Base64: '${bytes.toBase64}'"
   }
-  final object PublicKey {
+  object PublicKey {
     final val Length = 32
     final val LengthLong = Length.toLong
     private[Ed25519] def create(bytes: ByteVector): PublicKey = new PublicKey(bytes) {}
@@ -34,9 +35,11 @@ object Ed25519 { //scalastyle:ignore
      * because of the interaction with recrypt and lack of sizing guarantees (a la refined) it's needed.
      */
     def fromPaddedBytes(bytes: ByteVector): PublicKey =
-      create(bytes
-        .take(Length)
-        .padLeft(Length))
+      create(
+        bytes
+          .take(Length)
+          .padLeft(Length)
+      )
   }
 
   /**
@@ -51,8 +54,8 @@ object Ed25519 { //scalastyle:ignore
    * `generateKeyPair` to obtain a well-formed key.
    */
   sealed abstract case class PrivateKey(bytes: ByteVector) {
-    //A protection against logging Private keys.
-    override def toString: String = s"Ed25519.PrivateKey(<BYTES>)"
+    // A protection against logging Private keys.
+    override def toString: String = "Ed25519.PrivateKey(<BYTES>)"
 
     /** The 32-byte Ed25519 seed (first half of the NaCl layout). */
     def seed: ByteVector = bytes.take(PrivateKey.SeedLength.toLong)
@@ -60,9 +63,11 @@ object Ed25519 { //scalastyle:ignore
     /** The 32-byte public key embedded in this private key (second half of the NaCl layout). */
     def embeddedPublicKey: ByteVector = bytes.drop(PrivateKey.SeedLength.toLong)
   }
-  final object PrivateKey {
+  object PrivateKey {
+
     /** Length of the Ed25519 seed in bytes. */
     final val SeedLength = 32
+
     /** Total length of a NaCl-style Ed25519 private key: seed (32) || public key (32). */
     final val Length = SeedLength + PublicKey.Length
     final val LengthLong = Length.toLong
@@ -86,7 +91,7 @@ object Ed25519 { //scalastyle:ignore
   sealed abstract case class Signature(bytes: ByteVector) {
     override def toString: String = s"Signature in Base64: '${bytes.toBase64}'"
   }
-  final object Signature {
+  object Signature {
     val Length = 64
     val LengthLong = Length.toLong
     private[Ed25519] def create(bytes: ByteVector): Signature = new Signature(bytes) {}
@@ -103,9 +108,11 @@ object Ed25519 { //scalastyle:ignore
      * because of the interaction with recrypt and lack of sizing guarantees (a la refined) it's needed.
      */
     def fromPaddedBytes(bytes: ByteVector): Signature =
-      create(bytes
-        .take(LengthLong)
-        .padLeft(LengthLong))
+      create(
+        bytes
+          .take(LengthLong)
+          .padLeft(LengthLong)
+      )
   }
 
   def verify(key: PublicKey, message: ByteVector, signature: Signature): Boolean = {

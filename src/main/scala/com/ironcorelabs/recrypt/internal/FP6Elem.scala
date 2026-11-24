@@ -17,10 +17,10 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import spire.algebra.Field
 import cats.kernel.Eq
-import cats.syntax.eq._
 import cats.syntax.contravariant._
+import cats.syntax.eq._
+import spire.algebra.Field
 
 /**
  * This is the degree 6 extension of the base field, which is formed on top of the degree 2 extension
@@ -45,7 +45,7 @@ final case class FP6Elem[A <: BigInt: ModsByPrime](elem1: FP2Elem[A], elem2: FP2
     FP6Elem[A](newFp1, newFp2, newFp3)
   }
 
-  def unary_- : FP6Elem[A] = FP6Elem[A](-elem1, -elem2, -elem3) //scalastyle:ignore
+  def unary_- : FP6Elem[A] = FP6Elem[A](-elem1, -elem2, -elem3)
 
   def *(other: FP6Elem[A])(implicit extensionField: ExtensionField[A]): FP6Elem[A] = {
     val Xi = implicitly[ExtensionField[A]].xi
@@ -96,8 +96,8 @@ final case class FP6Elem[A <: BigInt: ModsByPrime](elem1: FP2Elem[A], elem2: FP2
     FP6Elem[A](c2, c1, c0)
   }
 
-  //This is the element to the p power.
-  //a^p + (b^p * v^p) + c^p *(v^p)^2
+  // This is the element to the p power.
+  // a^p + (b^p * v^p) + c^p *(v^p)^2
   // v^p == (v ^(p % 3)) * Xi  ^ ((p - p % 3) /3)
   def frobenius(implicit extensionField: ExtensionField[A]): FP6Elem[A] = {
     val frobeniusFactor1 = extensionField.frobeniusFactor1
@@ -131,7 +131,7 @@ object FP6Elem {
   def create[A <: BigInt: ModsByPrime](a: A, b: A, a2: A, b2: A, a3: A, b3: A): FP6Elem[A] =
     FP6Elem[A](FP2Elem[A](a, b), FP2Elem[A](a2, b2), FP2Elem[A](a3, b3))
 
-  implicit def field[A <: BigInt: Field: ExtensionField: ModsByPrime]: Field[FP6Elem[A]] = new Field.WithDefaultGCD[FP6Elem[A]] {
+  implicit def field[A <: BigInt: Field: ExtensionField: ModsByPrime]: Field[FP6Elem[A]] = new Field[FP6Elem[A]] {
     def negate(x: FP6Elem[A]): FP6Elem[A] = -x
     val zero: FP6Elem[A] = {
       val fp2Zero = Field[FP2Elem[A]].zero
@@ -147,9 +147,8 @@ object FP6Elem {
     }
   }
 
-  implicit def eq[A <: BigInt: Eq]: Eq[FP6Elem[A]] = Eq.instance {
-    case (FP6Elem(one, two, three), FP6Elem(onePrime, twoPrime, threePrime)) =>
-      one === onePrime && two === twoPrime && three === threePrime
+  implicit def eq[A <: BigInt: Eq]: Eq[FP6Elem[A]] = Eq.instance { case (FP6Elem(one, two, three), FP6Elem(onePrime, twoPrime, threePrime)) =>
+    one === onePrime && two === twoPrime && three === threePrime
   }
 
   implicit def hashable[A <: BigInt: Hashable]: Hashable[FP6Elem[A]] = Hashable[(FP2Elem[A], FP2Elem[A], FP2Elem[A])].contramap {

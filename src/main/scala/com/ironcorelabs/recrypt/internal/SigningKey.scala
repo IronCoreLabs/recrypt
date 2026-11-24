@@ -22,8 +22,8 @@ import scodec.bits.ByteVector
 final case class PublicSigningKey(bytes: ByteVector) extends AnyVal
 
 object PublicSigningKey {
-  implicit val hashable: Hashable[PublicSigningKey] = Hashable.by {
-    case PublicSigningKey(bytes) => bytes
+  implicit val hashable: Hashable[PublicSigningKey] = Hashable.by { case PublicSigningKey(bytes) =>
+    bytes
   }
   val empty: PublicSigningKey = PublicSigningKey(ByteVector.empty)
 }
@@ -39,4 +39,3 @@ final case class Signature(bytes: ByteVector) extends AnyVal
 object Signature {
   val empty = Signature(ByteVector.empty)
 }
-

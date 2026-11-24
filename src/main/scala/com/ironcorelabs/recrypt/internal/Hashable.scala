@@ -17,10 +17,11 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import scodec.bits.{ ByteOrdering, ByteVector }
 import cats._
-import cats.syntax.contravariant._
 import cats.data.NonEmptyVector
+import cats.syntax.contravariant._
+import scodec.bits.{ByteOrdering, ByteVector}
+
 /**
  * Typeclass for converting A to a stable byte representation which is used for hashing, which means it will stay consistent
  * regardless of the changes to the class.
@@ -39,7 +40,7 @@ object Hashable {
   def by[A](f: A => ByteVector): Hashable[A] = (a: A) => f(a)
 
   implicit def instance: Contravariant[Hashable] = new Contravariant[Hashable] {
-    def contramap[A, B](fa: Hashable[A])(f: B => A): Hashable[B] = Hashable.by { b: B => fa(f(b)) }
+    def contramap[A, B](fa: Hashable[A])(f: B => A): Hashable[B] = Hashable.by((b: B) => fa(f(b)))
   }
 
   implicit val hashableInt: Hashable[Int] = by(i => ByteVector.fromInt(i, 4, ByteOrdering.BigEndian))
@@ -49,21 +50,16 @@ object Hashable {
   implicit val hashableString: Hashable[String] = by(s => ByteVector.view(s.getBytes("UTF-8")))
 
   implicit def hashableVector[A](implicit hashableA: Hashable[A]): Hashable[Vector[A]] = Hashable.by[Vector[A]] {
-    _.foldLeft(ByteVector.empty) { (acc, a) => acc ++ hashableA.toByteVector(a) }
+    _.foldLeft(ByteVector.empty)((acc, a) => acc ++ hashableA.toByteVector(a))
   }
 
   implicit def hashableNonEmptyVector[A: Hashable]: Hashable[NonEmptyVector[A]] = Hashable[Vector[A]].contramap(_.toVector)
 
-  implicit def hashableTuple2[A, B](implicit
-    hashableA: Hashable[A],
-    hashableB: Hashable[B]): Hashable[(A, B)] = Hashable.by {
-    case (a, b) => hashableA(a) ++ hashableB(b)
+  implicit def hashableTuple2[A, B](implicit hashableA: Hashable[A], hashableB: Hashable[B]): Hashable[(A, B)] = Hashable.by { case (a, b) =>
+    hashableA(a) ++ hashableB(b)
   }
 
-  implicit def hashableTuple3[A, B, C](implicit
-    hashableA: Hashable[A],
-    hashableB: Hashable[B],
-    hashableC: Hashable[C]): Hashable[(A, B, C)] = Hashable.by {
+  implicit def hashableTuple3[A, B, C](implicit hashableA: Hashable[A], hashableB: Hashable[B], hashableC: Hashable[C]): Hashable[(A, B, C)] = Hashable.by {
     case (a, b, c) => hashableA(a) ++ hashableB(b) ++ hashableC(c)
   }
 
@@ -71,8 +67,9 @@ object Hashable {
     hashableA: Hashable[A],
     hashableB: Hashable[B],
     hashableC: Hashable[C],
-    hashableD: Hashable[D]): Hashable[(A, B, C, D)] = Hashable.by {
-    case (a, b, c, d) => hashableA(a) ++ hashableB(b) ++ hashableC(c) ++ hashableD(d)
+    hashableD: Hashable[D]
+  ): Hashable[(A, B, C, D)] = Hashable.by { case (a, b, c, d) =>
+    hashableA(a) ++ hashableB(b) ++ hashableC(c) ++ hashableD(d)
   }
 
   implicit def hashableTuple5[A, B, C, D, E](implicit
@@ -80,8 +77,9 @@ object Hashable {
     hashableB: Hashable[B],
     hashableC: Hashable[C],
     hashableD: Hashable[D],
-    hashableE: Hashable[E]): Hashable[(A, B, C, D, E)] = Hashable.by {
-    case (a, b, c, d, e) => hashableA(a) ++ hashableB(b) ++ hashableC(c) ++ hashableD(d) ++ hashableE(e)
+    hashableE: Hashable[E]
+  ): Hashable[(A, B, C, D, E)] = Hashable.by { case (a, b, c, d, e) =>
+    hashableA(a) ++ hashableB(b) ++ hashableC(c) ++ hashableD(d) ++ hashableE(e)
   }
 
   implicit def hashable[A](implicit hashableA: Hashable[A]): Hashable[Option[A]] = Hashable.by { maybeA =>

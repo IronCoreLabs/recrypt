@@ -17,7 +17,7 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import point.HomogeneousPoint
+import com.ironcorelabs.recrypt.internal.point.HomogeneousPoint
 
 /**
  * This type holds all the points that are used in our core algorithm for for `FpType`.
@@ -29,6 +29,7 @@ import point.HomogeneousPoint
 final case class CurvePoints[FpType <: BigInt](
   g1: HomogeneousPoint[FP2Elem[FpType]],
   hashElement: HomogeneousPoint[FP2Elem[FpType]],
-  generator: HomogeneousPoint[FpType]) {
+  generator: HomogeneousPoint[FpType]
+) {
   val publicKeyGen = new PublicKeyGen[FpType](generator)
 }

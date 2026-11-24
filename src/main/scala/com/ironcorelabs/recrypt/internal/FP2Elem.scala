@@ -17,9 +17,10 @@
 
 package com.ironcorelabs.recrypt.internal
 
-import spire.algebra.Field
-import cats.kernel.Eq
 import cats.implicits._
+import cats.kernel.Eq
+import spire.algebra.Field
+
 /**
  * This is the degree 2 extension of the base field FP. It is formed by attaching the variable to
  * Fp, subject to the constraint u^2 + 1 = 0. That is, FP2 = Fp[u]/(u^2 + 1)
@@ -41,7 +42,7 @@ final case class FP2Elem[A <: BigInt](elem1: A, elem2: A)(implicit mods: ModsByP
 
   def *(scalar: Int): FP2Elem[A] = modAndNew(elem1 * scalar, elem2 * scalar)
 
-  def unary_- : FP2Elem[A] = modAndNew(-elem1, -elem2) //scalastyle:ignore method.name
+  def unary_- : FP2Elem[A] = modAndNew(-elem1, -elem2)
 
   def square: FP2Elem[A] = {
     val a2 = elem1 * elem2
@@ -58,21 +59,20 @@ final case class FP2Elem[A <: BigInt](elem1: A, elem2: A)(implicit mods: ModsByP
     FP2Elem(mods.create(-elem1 * inv), mods.create(elem2 * inv))
   }
 
-  //This is the element to the p power.
-  //Some of the reasoning is as follows
+  // This is the element to the p power.
+  // Some of the reasoning is as follows
   // x ^ p -x = 0 == x^p = x
-  //By the binomial expansion we get:
+  // By the binomial expansion we get:
   // (x + (y * u)) ^ p == x^p + p * (middle terms) + (u^p * y^p)
   // u ^p == -u  which is because our p is congruent to 3 mod 4
   // x^p + -uy^p == x + -uy
   def frobenius: FP2Elem[A] = modAndNew(-elem1, elem2)
 
-  def ^(power: BigInt): FP2Elem[A] = { //scalastyle:ignore
+  def ^(power: BigInt): FP2Elem[A] = {
     val bits = scodec.bits.BitVector(power.toByteArray).toIndexedSeq.dropWhile(!_)
-    val result = bits.toIndexedSeq.foldLeft(modAndNew(0, 1)) {
-      case (cur, bit) =>
-        val squareResult = cur * cur
-        if (bit) squareResult * this else squareResult
+    val result = bits.toIndexedSeq.foldLeft(modAndNew(0, 1)) { case (cur, bit) =>
+      val squareResult = cur * cur
+      if (bit) squareResult * this else squareResult
     }
     if (power < 0) result.inverse else result
   }
@@ -81,11 +81,11 @@ final case class FP2Elem[A <: BigInt](elem1: A, elem2: A)(implicit mods: ModsByP
 
 }
 
-object FP2Elem { //scalastyle:ignore
+object FP2Elem {
 
   def fromBigInts[A <: BigInt](elem1: BigInt, elem2: BigInt)(implicit mods: ModsByPrime[A]): FP2Elem[A] = FP2Elem(mods.create(elem1), mods.create(elem2))
   implicit final def fieldInstance[A <: BigInt](implicit fieldA: Field[A], modsByPrime: ModsByPrime[A]): Field[FP2Elem[A]] =
-    new Field.WithDefaultGCD[FP2Elem[A]] {
+    new Field[FP2Elem[A]] {
 
       def negate(x: FP2Elem[A]): FP2Elem[A] = -x
       def zero: FP2Elem[A] = FP2Elem(fieldA.zero, fieldA.zero)
@@ -96,14 +96,14 @@ object FP2Elem { //scalastyle:ignore
       def one: FP2Elem[A] = FP2Elem(fieldA.zero, fieldA.one)
     }
 
-  implicit def eq[A <: BigInt: Eq]: Eq[FP2Elem[A]] = Eq.instance {
-    case (FP2Elem(x, y), FP2Elem(x2, y2)) => x2.eqv(x) && y2.eqv(y)
+  implicit def eq[A <: BigInt: Eq]: Eq[FP2Elem[A]] = Eq.instance { case (FP2Elem(x, y), FP2Elem(x2, y2)) =>
+    x2.eqv(x) && y2.eqv(y)
   }
 
   implicit def hashable[A <: BigInt: Hashable]: Hashable[FP2Elem[A]] = Hashable[(A, A)].contramap { case FP2Elem(elem1, elem2) => (elem1, elem2) }
   implicit def byteDecoderFP2Elem[A <: BigInt](implicit readA: BytesDecoder[A], modsByPrime: ModsByPrime[A]): BytesDecoder[FP2Elem[A]] =
     BytesDecoder.forSize(readA.acceptableSize * 2) { bytes =>
       val (first, second) = bytes.splitAt(bytes.length / 2)
-      (readA.decode(first), readA.decode(second)).mapN { FP2Elem(_, _) }
+      (readA.decode(first), readA.decode(second)).mapN(FP2Elem(_, _))
     }
 }

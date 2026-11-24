@@ -26,12 +26,12 @@ import cats.syntax.contravariant._
 final case class SignedValue[A](publicSigningKey: PublicSigningKey, signature: Signature, payload: A)
 
 object SignedValue {
-  //Used to create a value which will be signed, later. This should only be done immediately before
-  //signing. Tests ensure that the signature isn't part of the "hashable" instance.
+  // Used to create a value which will be signed, later. This should only be done immediately before
+  // signing. Tests ensure that the signature isn't part of the "hashable" instance.
   def withEmptySignature[A](publicSigningKey: PublicSigningKey, payload: A): SignedValue[A] =
     SignedValue(publicSigningKey, Signature.empty, payload)
   implicit def hashable[A](implicit hashableA: Hashable[A]): Hashable[SignedValue[A]] =
-    Hashable[(PublicSigningKey, A)].contramap {
-      case SignedValue(key, _, payload) => (key, payload)
+    Hashable[(PublicSigningKey, A)].contramap { case SignedValue(key, _, payload) =>
+      (key, payload)
     }
 }

@@ -16,12 +16,12 @@
  */
 
 package com.ironcorelabs.recrypt.internal
-import spire.algebra.Field
-import point.HomogeneousPoint
-import scodec.bits.ByteVector
 import cats.Eq
-import cats.syntax.either._
 import cats.syntax.contravariant._
+import cats.syntax.either._
+import com.ironcorelabs.recrypt.internal.point.HomogeneousPoint
+import scodec.bits.ByteVector
+import spire.algebra.Field
 import spire.implicits._
 
 /**
@@ -63,12 +63,12 @@ final case class PublicKey[FpType] private[internal] (value: HomogeneousPoint[Fp
 
 object PublicKey {
   def fromByteVectors[A: Field: Eq](x: ByteVector, y: ByteVector)(implicit bytesDecoder: BytesDecoder[A]): Either[PointError, PublicKey[A]] = for {
-    ax <- bytesDecoder.decode(x).leftMap(decodeError => InvalidCoordinate(x, decodeError.toString))
-    ay <- bytesDecoder.decode(y).leftMap(decodeError => InvalidCoordinate(x, decodeError.toString))
+    ax    <- bytesDecoder.decode(x).leftMap(decodeError => InvalidCoordinate(x, decodeError.toString))
+    ay    <- bytesDecoder.decode(y).leftMap(decodeError => InvalidCoordinate(x, decodeError.toString))
     point <- HomogeneousPoint(ax, ay)
   } yield new PublicKey(point)
-  implicit def hashable[A: Hashable]: Hashable[PublicKey[A]] = Hashable[Option[(A, A)]].contramap { _.value.normalize }
-  implicit def eq[A: Eq]: Eq[PublicKey[A]] = Eq.by { _.value.normalize }
+  implicit def hashable[A: Hashable]: Hashable[PublicKey[A]] = Hashable[Option[(A, A)]].contramap(_.value.normalize)
+  implicit def eq[A: Eq]: Eq[PublicKey[A]] = Eq.by(_.value.normalize)
 }
 
 /**
@@ -77,11 +77,12 @@ object PublicKey {
  * so it can be decrypted using the delegatee's private key.
  */
 final case class ReencryptionKey[FpType <: BigInt](
-  rePublicKey: PublicKey[FpType], //An ephemeral key that is randomly chosen when this reencryption key is generated
-  toPublicKey: PublicKey[FpType], //The person or device that can decrypt the result
-  encryptedK: FP12Elem[FpType], //A random value in G_T, encrypted to the toPublicKey
+  rePublicKey: PublicKey[FpType],            // An ephemeral key that is randomly chosen when this reencryption key is generated
+  toPublicKey: PublicKey[FpType],            // The person or device that can decrypt the result
+  encryptedK: FP12Elem[FpType],              // A random value in G_T, encrypted to the toPublicKey
   hashedK: HomogeneousPoint[FP2Elem[FpType]] // A hashed version of the random value from G_T, used to perform the transform
 ) {
+
   /**
    * Augment the transform key. It's augmented using the inverse of the augmentation key to "undo"
    * the augmentation we did in the public key that created this key.
@@ -92,7 +93,7 @@ final case class ReencryptionKey[FpType <: BigInt](
 
 object ReencryptionKey {
   implicit def hashable[A <: BigInt: Hashable]: Hashable[ReencryptionKey[A]] = Hashable[(PublicKey[A], PublicKey[A], FP12Elem[A])].contramap {
-    //Note that the hashedK is not included in the hashable bytes.
+    // Note that the hashedK is not included in the hashable bytes.
     case ReencryptionKey(rePublicKey, toPublicKey, encryptedK, _) => (rePublicKey, toPublicKey, encryptedK)
   }
 }

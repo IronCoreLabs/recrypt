@@ -17,9 +17,9 @@
 
 package com.ironcorelabs.recrypt.internal
 import cats.data.NonEmptyVector
-import scodec.bits._
+import com.ironcorelabs.recrypt.internal.Fp.implicits._
 import com.ironcorelabs.recrypt.syntax.hashable._
-import Fp.implicits._
+import scodec.bits._
 
 class EncryptedValueTest extends com.ironcorelabs.recrypt.TestBase {
   val keyGen = Fp.curvePoints.publicKeyGen
@@ -38,9 +38,11 @@ class EncryptedValueTest extends com.ironcorelabs.recrypt.TestBase {
   }
 
   "ReencryptedValue authHash is included in toHashBytes" in {
-    val eov1: EncryptedValue[Fp] = ReencryptedValue(publicKey, plaintext, AuthHash(hex"00ff00ff"), NonEmptyVector(ReencryptionBlock(publicKey, plaintext, publicKey, plaintext), Vector()))
+    val eov1: EncryptedValue[Fp] =
+      ReencryptedValue(publicKey, plaintext, AuthHash(hex"00ff00ff"), NonEmptyVector(ReencryptionBlock(publicKey, plaintext, publicKey, plaintext), Vector()))
     val hash1 = eov1.toHashBytes
-    val eov2: EncryptedValue[Fp] = ReencryptedValue(publicKey, plaintext, AuthHash(hex"00ff00fe"), NonEmptyVector(ReencryptionBlock(publicKey, plaintext, publicKey, plaintext), Vector()))
+    val eov2: EncryptedValue[Fp] =
+      ReencryptedValue(publicKey, plaintext, AuthHash(hex"00ff00fe"), NonEmptyVector(ReencryptionBlock(publicKey, plaintext, publicKey, plaintext), Vector()))
     val hash2 = eov2.toHashBytes
 
     hash1 shouldNot be(hash2)

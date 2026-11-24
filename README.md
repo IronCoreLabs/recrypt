@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml/badge.svg)](https://github.com/IronCoreLabs/recrypt/actions/workflows/ci.yaml)
 [![codecov.io](https://codecov.io/github/IronCoreLabs/recrypt/coverage.svg?branch=main)](https://codecov.io/github/IronCoreLabs/recrypt?branch=main)
-[![scaladoc](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.ironcorelabs/recrypt-core_2.12)
+[![scaladoc](https://javadoc.io/badge2/com.ironcorelabs/recrypt-core_2.13/scaladoc.svg)](https://javadoc.io/doc/com.ironcorelabs/recrypt-core_2.13)
 
 This is a library that implements a set of cryptographic primitives that are needed for a _multi-hop proxy re-encryption_ scheme.
 
