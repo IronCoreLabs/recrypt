@@ -4,7 +4,7 @@ import ReleaseTransformations._
 lazy val scala213 = "2.13.18"
 
 // The LTS line rather than the latest 3.x.
-lazy val scala3 = "3.3.9"
+lazy val scala3 = "3.9.0"
 
 // publish := {} doesn't cover sbt-pgp's publishSigned, which is what the release actually uses.
 lazy val noPublish = Seq(
